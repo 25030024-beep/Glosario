@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kernel Run</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- ==================================================
+         MENÚ PRINCIPAL
+    =================================================== -->
+
+    <section id="menu" class="pantalla activa">
+
+        <h1>KERNEL RUN</h1>
+
+        <p class="subtitulo">
+            Administración de Procesos
+        </p>
+
+        <div class="menu-botones">
+
+            <button onclick="mostrarPantalla('niveles')">
+                ▶ JUGAR
+            </button>
+
+            <button onclick="mostrarPantalla('glosario')">
+                📖 GLOSARIO
+            </button>
+
+            <button onclick="mostrarPantalla('equipo')">
+                👥 EQUIPO
+            </button>
+
+            <button onclick="mostrarPantalla('referencias')">
+                📚 REFERENCIAS
+            </button>
+
+            <button onclick="mostrarPantalla('controles')">
+                ⚙ CONTROLES
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         SELECCIÓN DE NIVELES
+    =================================================== -->
+
+    <section id="niveles" class="pantalla">
+
+        <h2>Seleccionar nivel</h2>
+
+        <div class="contenedor-niveles">
+
+            <!-- NIVEL 1 -->
+
+            <button
+                id="botonNivel1"
+                class="nivel disponible"
+                onclick="iniciarNivel(1)"
+            >
+
+                <span>NIVEL 1</span>
+
+                <strong>
+                    Inicio del sistema
+                </strong>
+
+                <small id="estadoNivel1">
+                    🔓 Disponible
+                </small>
+
+            </button>
+
+
+            <!-- NIVEL 2 -->
+
+            <button
+                id="botonNivel2"
+                class="nivel bloqueado"
+                disabled
+            >
+
+                <span>NIVEL 2</span>
+
+                <strong>
+                    Terminal
+                </strong>
+
+                <small id="estadoNivel2">
+                    🔒 Bloqueado
+                </small>
+
+            </button>
+
+
+            <!-- NIVEL 3 -->
+
+            <button
+                id="botonNivel3"
+                class="nivel bloqueado"
+                disabled
+            >
+
+                <span>NIVEL 3</span>
+
+                <strong>
+                    Procesamiento
+                </strong>
+
+                <small id="estadoNivel3">
+                    🔒 Bloqueado
+                </small>
+
+            </button>
+
+
+            <!-- NIVEL 4 -->
+
+            <button
+                id="botonNivel4"
+                class="nivel bloqueado"
+                disabled
+            >
+
+                <span>NIVEL 4</span>
+
+                <strong>
+                    Kernel
+                </strong>
+
+                <small id="estadoNivel4">
+                    🔒 Bloqueado
+                </small>
+
+            </button>
+
+        </div>
+
+
+        <button
+            class="volver"
+            onclick="mostrarPantalla('menu')"
+        >
+            ← VOLVER
+        </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         GLOSARIO
+    =================================================== -->
+
+    <section id="glosario" class="pantalla">
+
+        <h2>Glosario</h2>
+
+        <p>
+            16 conceptos de Sistemas Operativos
+        </p>
+
+        <div
+            id="listaConceptos"
+            class="conceptos">
+        </div>
+
+
+        <button
+            class="volver"
+            onclick="mostrarPantalla('menu')"
+        >
+            ← VOLVER
+        </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         EQUIPO
+    =================================================== -->
+
+    <section id="equipo" class="pantalla">
+
+        <h2>Equipo</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Integrante
+                    </th>
+
+                    <th>
+                        Actividad realizada
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+                    <td>Integrante 1</td>
+                    <td>________________</td>
+                </tr>
+
+                <tr>
+                    <td>Integrante 2</td>
+                    <td>________________</td>
+                </tr>
+
+                <tr>
+                    <td>Integrante 3</td>
+                    <td>________________</td>
+                </tr>
+
+                <tr>
+                    <td>Integrante 4</td>
+                    <td>________________</td>
+                </tr>
+
+                <tr>
+                    <td>Integrante 5</td>
+                    <td>________________</td>
+                </tr>
+
+                <tr>
+                    <td>Integrante 6</td>
+                    <td>________________</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <button
+            class="volver"
+            onclick="mostrarPantalla('menu')"
+        >
+            ← VOLVER
+        </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         REFERENCIAS
+    =================================================== -->
+
+    <section id="referencias" class="pantalla">
+
+        <h2>Referencias</h2>
+
+        <div class="referencias">
+
+            <p>[1] Referencia APA</p>
+
+            <p>[2] Referencia APA</p>
+
+            <p>[3] Referencia APA</p>
+
+            <p>[4] Referencia APA</p>
+
+        </div>
+
+
+        <button
+            class="volver"
+            onclick="mostrarPantalla('menu')"
+        >
+            ← VOLVER
+        </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         CONTROLES
+    =================================================== -->
+
+    <section id="controles" class="pantalla">
+
+        <h2>Controles</h2>
+
+        <div class="lista-controles">
+
+            <p>← / A — Mover izquierda</p>
+
+            <p>→ / D — Mover derecha</p>
+
+            <p>↑ / W / ESPACIO — Saltar</p>
+
+            <p>ESC — Pausa</p>
+
+        </div>
+
+
+        <button
+            class="volver"
+            onclick="mostrarPantalla('menu')"
+        >
+            ← VOLVER
+        </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         VIDEOJUEGO
+    =================================================== -->
+
+    <section id="juego" class="pantalla">
+
+        <!-- HUD -->
+
+        <div class="hud">
+
+            <span id="hudVidas">
+                ❤️ ❤️ ❤️
+            </span>
+
+            <span id="hudNivel">
+                NIVEL 1
+            </span>
+
+            <span id="hudConceptos">
+                CONCEPTOS: 0 / 4
+            </span>
+
+        </div>
+
+
+        <!-- CANVAS -->
+
+        <canvas
+            id="gameCanvas"
+            width="960"
+            height="540">
+        </canvas>
+
+
+        <p class="ayuda-juego">
+
+            A/D o ←/→ para moverte
+            •
+            W/↑/ESPACIO para saltar
+
+        </p>
+
+
+        <button
+            class="volver"
+            onclick="salirDelJuego()"
+        >
+            ← SALIR DEL NIVEL
+        </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         MODAL DE CONCEPTO
+    =================================================== -->
+
+    <div
+        id="modalConcepto"
+        class="modal oculto"
+    >
+
+        <div class="modal-contenido">
+
+            <p class="modal-etiqueta">
+                ARCHIVO DEL SISTEMA ENCONTRADO
+            </p>
+
+            <h2 id="modalTitulo">
+                Concepto
+            </h2>
+
+
+            <div class="imagen-concepto">
+
+                <img
+                    id="modalImagen"
+                    src=""
+                    alt="Imagen del concepto"
+                >
+
+                <span id="placeholderImagen">
+                    [ ESPACIO PARA IMAGEN ]
+                </span>
+
+            </div>
+
+
+            <p id="modalDefinicion">
+
+                Aquí irá la definición
+                del concepto.
+
+            </p>
+
+
+            <button onclick="cerrarConcepto()">
+                CONTINUAR ▶
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         MENSAJE DE META BLOQUEADA
+    =================================================== -->
+
+    <div
+        id="modalMeta"
+        class="modal oculto"
+    >
+
+        <div class="modal-contenido">
+
+            <p class="modal-error">
+                ⚠ ACCESO DENEGADO
+            </p>
+
+            <h2>
+                ARCHIVOS INCOMPLETOS
+            </h2>
+
+            <p>
+                Debes recuperar los cuatro
+                conceptos antes de finalizar
+                el nivel.
+            </p>
+
+            <p id="textoMetaConceptos">
+                CONCEPTOS: 0 / 4
+            </p>
+
+
+            <button onclick="cerrarMetaBloqueada()">
+                CONTINUAR BUSCANDO
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         NIVEL COMPLETADO
+    =================================================== -->
+
+    <div
+        id="modalNivelCompletado"
+        class="modal oculto"
+    >
+
+        <div class="modal-contenido">
+
+            <p class="modal-exito">
+                ✓ SISTEMA RESTAURADO
+            </p>
+
+            <h2>
+                NIVEL 1 COMPLETADO
+            </h2>
+
+            <p>
+                Has recuperado los
+                4 archivos del sistema.
+            </p>
+
+            <div class="resultado-nivel">
+
+                <p>
+                    📦 CONCEPTOS: 4 / 4
+                </p>
+
+                <p>
+                    🔓 NIVEL 2 DESBLOQUEADO
+                </p>
+
+            </div>
+
+
+            <button onclick="continuarDespuesDeNivel()">
+                CONTINUAR
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="main.js"></script>
+
+    <script src="game.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,686 @@
+/* ==================================================
+   CONFIGURACIÓN GENERAL
+================================================== */
+
+* {
+
+    box-sizing: border-box;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+body {
+
+    background: #090b16;
+
+    color: white;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    text-align: center;
+
+    overflow-x: hidden;
+
+}
+
+
+/* ==================================================
+   PANTALLAS
+================================================== */
+
+.pantalla {
+
+    display: none;
+
+    min-height: 100vh;
+
+    padding: 50px 20px;
+
+}
+
+
+.pantalla.activa {
+
+    display: block;
+
+}
+
+
+/* ==================================================
+   TÍTULOS
+================================================== */
+
+h1 {
+
+    font-size: 60px;
+
+    color: #4cff88;
+
+    text-shadow:
+
+        4px 4px #08752e,
+
+        8px 8px #031f0c;
+
+    margin-top: 60px;
+
+}
+
+
+h2 {
+
+    font-size: 40px;
+
+    color: #4cff88;
+
+    margin-bottom: 35px;
+
+}
+
+
+.subtitulo {
+
+    margin:
+
+        15px 0 40px;
+
+    color: #aaa;
+
+}
+
+
+/* ==================================================
+   BOTONES
+================================================== */
+
+button {
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    background: #191d31;
+
+    color: white;
+
+    border:
+
+        3px solid #4cff88;
+
+    padding: 15px;
+
+    transition: 0.2s;
+
+}
+
+
+button:hover:not(:disabled) {
+
+    background: #4cff88;
+
+    color: #090b16;
+
+    transform: scale(1.05);
+
+}
+
+
+/* ==================================================
+   MENÚ
+================================================== */
+
+.menu-botones {
+
+    display: flex;
+
+    flex-direction: column;
+
+    width: 280px;
+
+    margin: auto;
+
+    gap: 15px;
+
+}
+
+
+/* ==================================================
+   NIVELES
+================================================== */
+
+.contenedor-niveles {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 220px);
+
+    justify-content: center;
+
+    gap: 25px;
+
+    margin-bottom: 40px;
+
+}
+
+
+.nivel {
+
+    height: 160px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 15px;
+
+}
+
+
+.nivel span {
+
+    font-size: 22px;
+
+}
+
+
+.nivel strong {
+
+    color: #4cff88;
+
+}
+
+
+.nivel small {
+
+    color: #aaa;
+
+}
+
+
+.nivel.completado {
+
+    border-color: #56b7ff;
+
+}
+
+
+.nivel.completado strong {
+
+    color: #56b7ff;
+
+}
+
+
+.bloqueado {
+
+    opacity: 0.4;
+
+    cursor: not-allowed;
+
+}
+
+
+/* ==================================================
+   VOLVER
+================================================== */
+
+.volver {
+
+    margin-top: 35px;
+
+}
+
+
+/* ==================================================
+   GLOSARIO
+================================================== */
+
+.conceptos {
+
+    max-width: 900px;
+
+    margin: 30px auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+
+}
+
+
+.concepto {
+
+    border:
+
+        2px solid #4cff88;
+
+    background: #191d31;
+
+    padding: 20px 10px;
+
+    min-height: 90px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.concepto-nivel1 {
+
+    border-color: #56b7ff;
+
+}
+
+
+/* ==================================================
+   TABLA
+================================================== */
+
+table {
+
+    width: 80%;
+
+    max-width: 800px;
+
+    margin: auto;
+
+    border-collapse: collapse;
+
+}
+
+
+th,
+td {
+
+    border:
+
+        2px solid #4cff88;
+
+    padding: 15px;
+
+}
+
+
+th {
+
+    background: #191d31;
+
+}
+
+
+/* ==================================================
+   REFERENCIAS
+================================================== */
+
+.referencias {
+
+    max-width: 800px;
+
+    margin: auto;
+
+    text-align: left;
+
+    line-height: 2;
+
+}
+
+
+/* ==================================================
+   CONTROLES
+================================================== */
+
+.lista-controles {
+
+    max-width: 500px;
+
+    margin: auto;
+
+    text-align: left;
+
+    line-height: 2.5;
+
+}
+
+
+/* ==================================================
+   JUEGO
+================================================== */
+
+#juego {
+
+    padding-top: 20px;
+
+}
+
+
+#gameCanvas {
+
+    display: block;
+
+    width: 100%;
+
+    max-width: 960px;
+
+    margin: 20px auto;
+
+    border:
+
+        4px solid #4cff88;
+
+    background: #11162a;
+
+    image-rendering: pixelated;
+
+}
+
+
+.hud {
+
+    max-width: 960px;
+
+    margin: auto;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 15px;
+
+    background: #191d31;
+
+    border:
+
+        2px solid #4cff88;
+
+}
+
+
+.ayuda-juego {
+
+    color: #aaa;
+
+    margin-top: 15px;
+
+    font-size: 14px;
+
+}
+
+
+/* ==================================================
+   MODALES
+================================================== */
+
+.modal {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background:
+        rgba(0, 0, 0, 0.88);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 9999;
+
+    padding: 20px;
+
+}
+
+
+.modal.oculto {
+
+    display: none;
+
+}
+
+
+.modal-contenido {
+
+    width: 100%;
+
+    max-width: 620px;
+
+    background: #11162a;
+
+    border:
+
+        4px solid #4cff88;
+
+    padding: 35px;
+
+    box-shadow:
+
+        0 0 30px
+        rgba(76, 255, 136, 0.35);
+
+}
+
+
+.modal-contenido h2 {
+
+    margin:
+
+        15px 0 25px;
+
+}
+
+
+.modal-contenido p {
+
+    line-height: 1.7;
+
+    margin-bottom: 20px;
+
+}
+
+
+.modal-etiqueta {
+
+    color: #56b7ff;
+
+    font-size: 13px;
+
+}
+
+
+.modal-error {
+
+    color: #ff4057;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+.modal-exito {
+
+    color: #4cff88;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+}
+
+
+/* ==================================================
+   IMAGEN DEL CONCEPTO
+================================================== */
+
+.imagen-concepto {
+
+    width: 260px;
+
+    height: 160px;
+
+    margin:
+
+        0 auto 25px;
+
+    border:
+
+        2px dashed #56b7ff;
+
+    background: #090b16;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+}
+
+
+.imagen-concepto img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    display: none;
+
+}
+
+
+#placeholderImagen {
+
+    color: #777;
+
+    font-size: 12px;
+
+}
+
+
+/* ==================================================
+   RESULTADO
+================================================== */
+
+.resultado-nivel {
+
+    background: #090b16;
+
+    border:
+
+        2px solid #56b7ff;
+
+    padding: 20px;
+
+    margin:
+
+        25px 0;
+
+}
+
+
+.resultado-nivel p {
+
+    margin: 8px;
+
+}
+
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+@media (max-width: 600px) {
+
+    h1 {
+
+        font-size: 38px;
+
+    }
+
+
+    h2 {
+
+        font-size: 28px;
+
+    }
+
+
+    .contenedor-niveles {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .conceptos {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+
+    .hud {
+
+        flex-direction: column;
+
+        gap: 10px;
+
+    }
+
+
+    table {
+
+        width: 100%;
+
+        font-size: 12px;
+
+    }
+
+
+    .modal-contenido {
+
+        padding: 20px;
+
+    }
+
+
+    .imagen-concepto {
+
+        width: 100%;
+
+    }
+
+}
