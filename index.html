@@ -3,12 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Kernel Run</title>
 
-    <link rel="stylesheet" href="styles.css">
+    <link
+        rel="stylesheet"
+        href="styles.css"
+    >
 </head>
+
 
 <body>
 
@@ -16,13 +24,17 @@
          MENÚ PRINCIPAL
     =================================================== -->
 
-    <section id="menu" class="pantalla activa">
+    <section
+        id="menu"
+        class="pantalla activa"
+    >
 
-        <h1>KERNEL RUN</h1>
+        <h1 class="Tt">Ya trabaja Erika</h1>
 
         <p class="subtitulo">
-            Administración de Procesos
+            Glosario equipo 4 creo
         </p>
+
 
         <div class="menu-botones">
 
@@ -51,25 +63,34 @@
     </section>
 
 
+
     <!-- ==================================================
          SELECCIÓN DE NIVELES
     =================================================== -->
 
-    <section id="niveles" class="pantalla">
+    <section
+        id="niveles"
+        class="pantalla"
+    >
 
         <h2>Seleccionar nivel</h2>
 
+
         <div class="contenedor-niveles">
+
 
             <!-- NIVEL 1 -->
 
             <button
                 id="botonNivel1"
-                class="nivel disponible"
-                onclick="iniciarNivel(1)"
+                class="nivel"
+                data-nivel="1"
+                onclick="seleccionarNivel(1)"
             >
 
-                <span>NIVEL 1</span>
+                <span>
+                    NIVEL 1
+                </span>
 
                 <strong>
                     Inicio del sistema
@@ -82,15 +103,19 @@
             </button>
 
 
+
             <!-- NIVEL 2 -->
 
             <button
                 id="botonNivel2"
                 class="nivel bloqueado"
-                disabled
+                data-nivel="2"
+                onclick="seleccionarNivel(2)"
             >
 
-                <span>NIVEL 2</span>
+                <span>
+                    NIVEL 2
+                </span>
 
                 <strong>
                     Terminal
@@ -103,15 +128,19 @@
             </button>
 
 
+
             <!-- NIVEL 3 -->
 
             <button
                 id="botonNivel3"
                 class="nivel bloqueado"
-                disabled
+                data-nivel="3"
+                onclick="seleccionarNivel(3)"
             >
 
-                <span>NIVEL 3</span>
+                <span>
+                    NIVEL 3
+                </span>
 
                 <strong>
                     Procesamiento
@@ -124,15 +153,19 @@
             </button>
 
 
+
             <!-- NIVEL 4 -->
 
             <button
                 id="botonNivel4"
                 class="nivel bloqueado"
-                disabled
+                data-nivel="4"
+                onclick="seleccionarNivel(4)"
             >
 
-                <span>NIVEL 4</span>
+                <span>
+                    NIVEL 4
+                </span>
 
                 <strong>
                     Kernel
@@ -157,11 +190,15 @@
     </section>
 
 
+
     <!-- ==================================================
          GLOSARIO
     =================================================== -->
 
-    <section id="glosario" class="pantalla">
+    <section
+        id="glosario"
+        class="pantalla"
+    >
 
         <h2>Glosario</h2>
 
@@ -169,9 +206,16 @@
             16 conceptos de Sistemas Operativos
         </p>
 
+
+        <!-- IMPORTANTE:
+             Este ID coincide con el main.js que
+             corregiremos después.
+        -->
+
         <div
             id="listaConceptos"
-            class="conceptos">
+            class="conceptos"
+        >
         </div>
 
 
@@ -185,13 +229,18 @@
     </section>
 
 
+
     <!-- ==================================================
          EQUIPO
     =================================================== -->
 
-    <section id="equipo" class="pantalla">
+    <section
+        id="equipo"
+        class="pantalla"
+    >
 
         <h2>Equipo</h2>
+
 
         <table>
 
@@ -259,23 +308,36 @@
     </section>
 
 
+
     <!-- ==================================================
          REFERENCIAS
     =================================================== -->
 
-    <section id="referencias" class="pantalla">
+    <section
+        id="referencias"
+        class="pantalla"
+    >
 
         <h2>Referencias</h2>
 
+
         <div class="referencias">
 
-            <p>[1] Referencia APA</p>
+            <p>
+                [1] Referencia APA
+            </p>
 
-            <p>[2] Referencia APA</p>
+            <p>
+                [2] Referencia APA
+            </p>
 
-            <p>[3] Referencia APA</p>
+            <p>
+                [3] Referencia APA
+            </p>
 
-            <p>[4] Referencia APA</p>
+            <p>
+                [4] Referencia APA
+            </p>
 
         </div>
 
@@ -288,25 +350,38 @@
         </button>
 
     </section>
+
 
 
     <!-- ==================================================
          CONTROLES
     =================================================== -->
 
-    <section id="controles" class="pantalla">
+    <section
+        id="controles"
+        class="pantalla"
+    >
 
         <h2>Controles</h2>
 
+
         <div class="lista-controles">
 
-            <p>← / A — Mover izquierda</p>
+            <p>
+                ← / A — Mover izquierda
+            </p>
 
-            <p>→ / D — Mover derecha</p>
+            <p>
+                → / D — Mover derecha
+            </p>
 
-            <p>↑ / W / ESPACIO — Saltar</p>
+            <p>
+                ↑ / W / ESPACIO — Saltar
+            </p>
 
-            <p>ESC — Pausa</p>
+            <p>
+                ESC — Salir del nivel
+            </p>
 
         </div>
 
@@ -321,11 +396,16 @@
     </section>
 
 
+
     <!-- ==================================================
-         VIDEOJUEGO
+         JUEGO
     =================================================== -->
 
-    <section id="juego" class="pantalla">
+    <section
+        id="juego"
+        class="pantalla"
+    >
+
 
         <!-- HUD -->
 
@@ -335,9 +415,11 @@
                 ❤️ ❤️ ❤️
             </span>
 
+
             <span id="hudNivel">
                 NIVEL 1
             </span>
+
 
             <span id="hudConceptos">
                 CONCEPTOS: 0 / 4
@@ -346,22 +428,29 @@
         </div>
 
 
+
         <!-- CANVAS -->
 
         <canvas
             id="gameCanvas"
             width="960"
-            height="540">
+            height="540"
+        >
+            Tu navegador no soporta Canvas.
         </canvas>
+
 
 
         <p class="ayuda-juego">
 
             A/D o ←/→ para moverte
+
             •
+
             W/↑/ESPACIO para saltar
 
         </p>
+
 
 
         <button
@@ -372,6 +461,7 @@
         </button>
 
     </section>
+
 
 
     <!-- ==================================================
@@ -385,13 +475,16 @@
 
         <div class="modal-contenido">
 
+
             <p class="modal-etiqueta">
                 ARCHIVO DEL SISTEMA ENCONTRADO
             </p>
 
+
             <h2 id="modalTitulo">
                 Concepto
             </h2>
+
 
 
             <div class="imagen-concepto">
@@ -400,6 +493,7 @@
                     id="modalImagen"
                     src=""
                     alt="Imagen del concepto"
+                    style="display: none;"
                 >
 
                 <span id="placeholderImagen">
@@ -409,12 +503,11 @@
             </div>
 
 
+
             <p id="modalDefinicion">
-
-                Aquí irá la definición
-                del concepto.
-
+                Aquí irá la definición del concepto.
             </p>
+
 
 
             <button onclick="cerrarConcepto()">
@@ -426,8 +519,9 @@
     </div>
 
 
+
     <!-- ==================================================
-         MENSAJE DE META BLOQUEADA
+         MODAL DE META BLOQUEADA
     =================================================== -->
 
     <div
@@ -437,19 +531,22 @@
 
         <div class="modal-contenido">
 
+
             <p class="modal-error">
                 ⚠ ACCESO DENEGADO
             </p>
+
 
             <h2>
                 ARCHIVOS INCOMPLETOS
             </h2>
 
+
             <p>
-                Debes recuperar los cuatro
-                conceptos antes de finalizar
-                el nivel.
+                Debes recuperar los cuatro conceptos
+                antes de finalizar el nivel.
             </p>
+
 
             <p id="textoMetaConceptos">
                 CONCEPTOS: 0 / 4
@@ -465,8 +562,9 @@
     </div>
 
 
+
     <!-- ==================================================
-         NIVEL COMPLETADO
+         MODAL DE NIVEL COMPLETADO
     =================================================== -->
 
     <div
@@ -476,18 +574,22 @@
 
         <div class="modal-contenido">
 
+
             <p class="modal-exito">
                 ✓ SISTEMA RESTAURADO
             </p>
 
+
             <h2>
-                NIVEL 1 COMPLETADO
+                NIVEL COMPLETADO
             </h2>
 
+
             <p>
-                Has recuperado los
-                4 archivos del sistema.
+                Has recuperado los 4 archivos
+                del sistema.
             </p>
+
 
             <div class="resultado-nivel">
 
@@ -496,7 +598,7 @@
                 </p>
 
                 <p>
-                    🔓 NIVEL 2 DESBLOQUEADO
+                    🔓 SIGUIENTE NIVEL DESBLOQUEADO
                 </p>
 
             </div>
@@ -511,11 +613,18 @@
     </div>
 
 
-    <!-- JAVASCRIPT -->
+
+    <!-- ==================================================
+         JAVASCRIPT
+
+         main.js SIEMPRE debe cargarse primero.
+         game.js después.
+    =================================================== -->
 
     <script src="main.js"></script>
 
     <script src="game.js"></script>
+
 
 </body>
 
