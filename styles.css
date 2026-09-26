@@ -62,16 +62,31 @@ h1 {
 
     color: #4cff88;
 
-    text-shadow:
+    /*text-shadow:
 
         4px 4px #08752e,
 
         8px 8px #031f0c;
 
-    margin-top: 60px;
+    margin-top: 60px;*/
 
 }
+/*
+.Tt {
 
+    font-size: 60px;
+
+    color: #b01438;
+
+    text-shadow:
+
+        4px 4px #d051c1,
+
+        8px 8px #031f0c;
+
+    margin-top: 60px;
+
+}*/
 
 h2 {
 
@@ -683,4 +698,33 @@ th {
 
     }
 
+}
+
+
+/* ============================================================
+   HOVER DE LOS BOTONES DE NIVEL
+   Todo el texto pasa a negro al colocar el mouse encima
+   ============================================================ */
+
+.nivel:hover,
+.nivel:hover span,
+.nivel:hover strong,
+.nivel:hover small {
+    color: #000000 !important;
+}
+
+/* Mantener el texto negro aunque el nivel esté completado */
+.nivel.completado:hover,
+.nivel.completado:hover span,
+.nivel.completado:hover strong,
+.nivel.completado:hover small {
+    color: #000000 !important;
+}
+
+/* Nivel disponible */
+.nivel.disponible:hover,
+.nivel.disponible:hover span,
+.nivel.disponible:hover strong,
+.nivel.disponible:hover small {
+    color: #000000 !important;
 }
