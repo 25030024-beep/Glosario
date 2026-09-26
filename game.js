@@ -1,6 +1,8 @@
 // ============================================================
 // KERNEL RUN
-// NIVEL 1 — INICIO DEL SISTEMA
+// GAME.JS
+// NIVEL 1: INICIO DEL SISTEMA
+// NIVEL 2: TERMINAL
 // ============================================================
 
 const canvas = document.getElementById("gameCanvas");
@@ -29,6 +31,26 @@ let frameJuego = 0;
 
 let mensajeTemporal = "";
 let tiempoMensaje = 0;
+
+let anchoMapa = 5000;
+
+// ============================================================
+// OBJETOS ACTIVOS
+// ============================================================
+
+let plataformas = [];
+let plataformasMoviles = [];
+let obstaculos = [];
+let checkpoints = [];
+let enemigos = [];
+let bloquesConceptos = [];
+
+let meta = {
+    x: 0,
+    y: 0,
+    ancho: 80,
+    alto: 110
+};
 
 // ============================================================
 // TECLADO
@@ -63,18 +85,19 @@ window.addEventListener("keydown", evento => {
         return;
     }
 
-    const esTeclaSalto =
+    const esSalto =
         evento.code === "ArrowUp" ||
         evento.code === "KeyW" ||
         evento.code === "Space";
 
     if (
-        esTeclaSalto &&
+        esSalto &&
         jugador.enSuelo &&
         !saltoPresionado
     ) {
         jugador.velocidadY = -jugador.fuerzaSalto;
         jugador.enSuelo = false;
+        jugador.plataformaActual = null;
         saltoPresionado = true;
     }
 });
@@ -83,17 +106,15 @@ window.addEventListener("keyup", evento => {
 
     teclas[evento.code] = false;
 
-    const esTeclaSalto =
+    const esSalto =
         evento.code === "ArrowUp" ||
         evento.code === "KeyW" ||
         evento.code === "Space";
 
-    if (esTeclaSalto) {
+    if (esSalto) {
 
         saltoPresionado = false;
 
-        // Si soltamos rápidamente la tecla,
-        // el salto se vuelve más corto.
         if (jugador.velocidadY < -5) {
             jugador.velocidadY *= 0.48;
         }
@@ -138,16 +159,12 @@ const jugador = {
     velocidadY: 0,
 
     velocidad: 5,
-
-    // Salto aumentado.
-    // Las plataformas siguen siendo sólidas por los 4 lados.
     fuerzaSalto: 16,
 
     enSuelo: false,
+    mirando: 1,
 
-    // 1 = derecha
-    // -1 = izquierda
-    mirando: 1
+    plataformaActual: null
 };
 
 // ============================================================
@@ -158,411 +175,522 @@ const gravedad = 0.7;
 const friccion = 0.80;
 
 // ============================================================
-// MAPA
+// NIVELES
 // ============================================================
 
-const anchoMapa = 5000;
+const niveles = {
 
-// ============================================================
-// PLATAFORMAS
-//
-// IMPORTANTE:
-// Todas estas plataformas tienen colisión completa.
-// No se pueden atravesar desde abajo, arriba ni los lados.
-// ============================================================
+    // ========================================================
+    // NIVEL 1
+    // ========================================================
 
-const plataformas = [
+    1: {
 
-    // --------------------------------------------------------
-    // ZONA 1 — INICIO DEL SISTEMA
-    // --------------------------------------------------------
+        nombre: "INICIO DEL SISTEMA",
 
-    {
-        x: 0,
-        y: 480,
-        ancho: 650,
-        alto: 60
+        ancho: 5000,
+
+        inicioX: 100,
+        inicioY: 300,
+
+        plataformas: [
+
+            { x: 0, y: 480, ancho: 650, alto: 60 },
+
+            { x: 720, y: 390, ancho: 180, alto: 30 },
+
+            { x: 960, y: 310, ancho: 180, alto: 30 },
+
+            { x: 1200, y: 230, ancho: 200, alto: 30 },
+
+            { x: 1470, y: 360, ancho: 240, alto: 30 },
+
+            { x: 1780, y: 480, ancho: 650, alto: 60 },
+
+            { x: 2510, y: 390, ancho: 180, alto: 30 },
+
+            { x: 2760, y: 300, ancho: 180, alto: 30 },
+
+            { x: 3020, y: 210, ancho: 180, alto: 30 },
+
+            { x: 3280, y: 300, ancho: 180, alto: 30 },
+
+            { x: 3540, y: 390, ancho: 180, alto: 30 },
+
+            { x: 3800, y: 480, ancho: 1200, alto: 60 },
+
+            { x: 3970, y: 340, ancho: 180, alto: 30 },
+
+            { x: 4230, y: 250, ancho: 180, alto: 30 },
+
+            { x: 4480, y: 340, ancho: 180, alto: 30 }
+        ],
+
+        plataformasMoviles: [],
+
+        obstaculos: [
+
+            { x: 350, y: 450, ancho: 50, alto: 30 },
+
+            { x: 500, y: 450, ancho: 60, alto: 30 },
+
+            { x: 1900, y: 450, ancho: 60, alto: 30 },
+
+            { x: 2150, y: 450, ancho: 70, alto: 30 },
+
+            { x: 3900, y: 450, ancho: 60, alto: 30 },
+
+            { x: 4140, y: 450, ancho: 70, alto: 30 },
+
+            { x: 4400, y: 450, ancho: 70, alto: 30 }
+        ],
+
+        checkpoints: [
+
+            {
+                x: 1830,
+                y: 400,
+                ancho: 35,
+                alto: 80,
+                respawnX: 1880,
+                respawnY: 430
+            },
+
+            {
+                x: 3850,
+                y: 400,
+                ancho: 35,
+                alto: 80,
+                respawnX: 3980,
+                respawnY: 430
+            }
+        ],
+
+        enemigos: [
+
+            {
+                x: 170,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 1.3,
+                limiteIzquierda: 100,
+                limiteDerecha: 300
+            },
+
+            {
+                x: 1500,
+                y: 320,
+                ancho: 38,
+                alto: 40,
+                velocidad: 1.5,
+                limiteIzquierda: 1490,
+                limiteDerecha: 1650
+            },
+
+            {
+                x: 2000,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 1.8,
+                limiteIzquierda: 1970,
+                limiteDerecha: 2100
+            },
+
+            {
+                x: 2810,
+                y: 260,
+                ancho: 38,
+                alto: 40,
+                velocidad: 1.7,
+                limiteIzquierda: 2780,
+                limiteDerecha: 2890
+            },
+
+            {
+                x: 4000,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 2,
+                limiteIzquierda: 3980,
+                limiteDerecha: 4100
+            },
+
+            {
+                x: 4550,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 2.2,
+                limiteIzquierda: 4500,
+                limiteDerecha: 4680
+            }
+        ],
+
+        conceptos: [
+
+            {
+                conceptoId: 1,
+                x: 590,
+                y: 390,
+                ancho: 44,
+                alto: 44
+            },
+
+            {
+                conceptoId: 2,
+                x: 1270,
+                y: 170,
+                ancho: 44,
+                alto: 44
+            },
+
+            {
+                conceptoId: 3,
+                x: 3075,
+                y: 150,
+                ancho: 44,
+                alto: 44
+            },
+
+            {
+                conceptoId: 4,
+                x: 4310,
+                y: 190,
+                ancho: 44,
+                alto: 44
+            }
+        ],
+
+        meta: {
+            x: 4840,
+            y: 370,
+            ancho: 80,
+            alto: 110
+        }
     },
 
-    {
-        x: 720,
-        y: 390,
-        ancho: 180,
-        alto: 30
-    },
+    // ========================================================
+    // NIVEL 2 — TERMINAL
+    // ========================================================
 
-    {
-        x: 960,
-        y: 310,
-        ancho: 180,
-        alto: 30
-    },
+    2: {
 
-    {
-        x: 1200,
-        y: 230,
-        ancho: 200,
-        alto: 30
-    },
+        nombre: "TERMINAL",
 
-    // --------------------------------------------------------
-    // DESCENSO HACIA ZONA 2
-    // --------------------------------------------------------
+        ancho: 5900,
 
-    {
-        x: 1470,
-        y: 360,
-        ancho: 240,
-        alto: 30
-    },
+        inicioX: 100,
+        inicioY: 300,
 
-    // --------------------------------------------------------
-    // ZONA 2
-    // --------------------------------------------------------
+        // ====================================================
+        // PLATAFORMAS FIJAS
+        // ====================================================
 
-    {
-        x: 1780,
-        y: 480,
-        ancho: 650,
-        alto: 60
-    },
+        plataformas: [
 
-    // --------------------------------------------------------
-    // ZONA 3 — PARKOUR
-    // --------------------------------------------------------
+            { x: 0, y: 480, ancho: 500, alto: 60 },
 
-    {
-        x: 2510,
-        y: 390,
-        ancho: 180,
-        alto: 30
-    },
+            // Primera móvil sustituye la plataforma anterior.
 
-    {
-        x: 2760,
-        y: 300,
-        ancho: 180,
-        alto: 30
-    },
+            { x: 860, y: 300, ancho: 170, alto: 30 },
 
-    {
-        x: 3020,
-        y: 210,
-        ancho: 180,
-        alto: 30
-    },
+            { x: 1110, y: 220, ancho: 180, alto: 30 },
 
-    {
-        x: 3280,
-        y: 300,
-        ancho: 180,
-        alto: 30
-    },
+            { x: 1380, y: 330, ancho: 170, alto: 30 },
 
-    {
-        x: 3540,
-        y: 390,
-        ancho: 180,
-        alto: 30
-    },
+            { x: 1650, y: 480, ancho: 580, alto: 60 },
 
-    // --------------------------------------------------------
-    // ZONA FINAL
-    // --------------------------------------------------------
+            // Zona móvil central.
 
-    {
-        x: 3800,
-        y: 480,
-        ancho: 1200,
-        alto: 60
-    },
+            { x: 3160, y: 210, ancho: 170, alto: 30 },
 
-    {
-        x: 3970,
-        y: 340,
-        ancho: 180,
-        alto: 30
-    },
+            { x: 3420, y: 310, ancho: 170, alto: 30 },
 
-    {
-        x: 4230,
-        y: 250,
-        ancho: 180,
-        alto: 30
-    },
+            { x: 3670, y: 400, ancho: 170, alto: 30 },
 
-    {
-        x: 4480,
-        y: 340,
-        ancho: 180,
-        alto: 30
+            { x: 3930, y: 480, ancho: 480, alto: 60 },
+
+            // Zona final.
+
+            { x: 4660, y: 390, ancho: 150, alto: 30 },
+
+            { x: 4910, y: 290, ancho: 160, alto: 30 },
+
+            { x: 5160, y: 200, ancho: 170, alto: 30 },
+
+            // IMPORTANTE:
+            // Ya NO existe la plataforma fija de x = 5500.
+            // La móvil será necesaria para llegar al final.
+
+            { x: 5700, y: 480, ancho: 200, alto: 60 }
+        ],
+
+        // ====================================================
+        // PLATAFORMAS MÓVILES
+        // ====================================================
+
+        plataformasMoviles: [
+
+            {
+                x: 530,
+                y: 390,
+
+                ancho: 150,
+                alto: 24,
+
+                eje: "x",
+
+                minimo: 520,
+                maximo: 700,
+
+                velocidad: 1.3
+            },
+
+            {
+                x: 2250,
+                y: 390,
+
+                ancho: 150,
+                alto: 24,
+
+                eje: "x",
+
+                minimo: 2240,
+                maximo: 2480,
+
+                velocidad: 1.8
+            },
+
+            {
+                x: 2580,
+                y: 400,
+
+                ancho: 140,
+                alto: 24,
+
+                eje: "y",
+
+                minimo: 245,
+                maximo: 410,
+
+                velocidad: 1.5
+            },
+
+            {
+                x: 2780,
+                y: 260,
+
+                ancho: 145,
+                alto: 24,
+
+                eje: "x",
+
+                minimo: 2740,
+                maximo: 2990,
+
+                velocidad: 1.7
+            },
+
+            {
+                x: 4440,
+                y: 410,
+
+                ancho: 140,
+                alto: 24,
+
+                eje: "y",
+
+                minimo: 270,
+                maximo: 420,
+
+                velocidad: 1.8
+            },
+
+            {
+                x: 5320,
+                y: 370,
+
+                ancho: 140,
+                alto: 24,
+
+                eje: "x",
+
+                minimo: 5290,
+                maximo: 5510,
+
+                velocidad: 2
+            }
+        ],
+
+        // ====================================================
+        // OBSTÁCULOS
+        // ====================================================
+
+        obstaculos: [
+
+            { x: 270, y: 450, ancho: 60, alto: 30 },
+
+            { x: 400, y: 450, ancho: 55, alto: 30 },
+
+            { x: 1780, y: 450, ancho: 65, alto: 30 },
+
+            { x: 1950, y: 450, ancho: 80, alto: 30 },
+
+            { x: 2100, y: 450, ancho: 60, alto: 30 },
+
+            { x: 3990, y: 450, ancho: 70, alto: 30 },
+
+            { x: 4140, y: 450, ancho: 70, alto: 30 },
+
+            { x: 4270, y: 450, ancho: 70, alto: 30 },
+
+            { x: 5760, y: 450, ancho: 60, alto: 30 }
+        ],
+
+        // ====================================================
+        // CHECKPOINTS
+        // ====================================================
+
+        checkpoints: [
+
+            {
+                x: 1685,
+                y: 400,
+                ancho: 35,
+                alto: 80,
+                respawnX: 1730,
+                respawnY: 430
+            },
+
+            {
+                x: 3960,
+                y: 400,
+                ancho: 35,
+                alto: 80,
+                respawnX: 4020,
+                respawnY: 430
+            }
+        ],
+
+        // ====================================================
+        // ENEMIGOS
+        // ====================================================
+
+        enemigos: [
+
+            {
+                x: 120,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 1.7,
+                limiteIzquierda: 80,
+                limiteDerecha: 230
+            },
+
+            {
+                x: 1410,
+                y: 290,
+                ancho: 38,
+                alto: 40,
+                velocidad: 1.8,
+                limiteIzquierda: 1390,
+                limiteDerecha: 1500
+            },
+
+            {
+                x: 1870,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 2,
+                limiteIzquierda: 1850,
+                limiteDerecha: 1930
+            },
+
+            {
+                x: 3190,
+                y: 170,
+                ancho: 38,
+                alto: 40,
+                velocidad: 2,
+                limiteIzquierda: 3180,
+                limiteDerecha: 3270
+            },
+
+            {
+                x: 4040,
+                y: 440,
+                ancho: 38,
+                alto: 40,
+                velocidad: 2.2,
+                limiteIzquierda: 4010,
+                limiteDerecha: 4120
+            },
+
+            {
+                x: 4950,
+                y: 250,
+                ancho: 38,
+                alto: 40,
+                velocidad: 2.2,
+                limiteIzquierda: 4930,
+                limiteDerecha: 5010
+            }
+
+            // Se eliminó el enemigo de x = 5530 porque
+            // estaba sobre la plataforma fija que quitamos.
+        ],
+
+        // ====================================================
+        // CONCEPTOS
+        // ====================================================
+
+        conceptos: [
+
+            {
+                conceptoId: 5,
+                x: 910,
+                y: 240,
+                ancho: 44,
+                alto: 44
+            },
+
+            {
+                conceptoId: 6,
+                x: 2050,
+                y: 380,
+                ancho: 44,
+                alto: 44
+            },
+
+            {
+                conceptoId: 7,
+                x: 3215,
+                y: 150,
+                ancho: 44,
+                alto: 44
+            },
+
+            {
+                conceptoId: 8,
+                x: 5215,
+                y: 140,
+                ancho: 44,
+                alto: 44
+            }
+        ],
+
+        meta: {
+            x: 5800,
+            y: 370,
+            ancho: 80,
+            alto: 110
+        }
     }
-];
-
-// ============================================================
-// PINCHOS
-// ============================================================
-
-const obstaculos = [
-
-    {
-        x: 350,
-        y: 450,
-        ancho: 50,
-        alto: 30
-    },
-
-    {
-        x: 500,
-        y: 450,
-        ancho: 60,
-        alto: 30
-    },
-
-    {
-        x: 1900,
-        y: 450,
-        ancho: 60,
-        alto: 30
-    },
-
-    {
-        x: 2150,
-        y: 450,
-        ancho: 70,
-        alto: 30
-    },
-
-    {
-        x: 3900,
-        y: 450,
-        ancho: 60,
-        alto: 30
-    },
-
-    {
-        x: 4140,
-        y: 450,
-        ancho: 70,
-        alto: 30
-    },
-
-    {
-        x: 4400,
-        y: 450,
-        ancho: 70,
-        alto: 30
-    }
-];
-
-// ============================================================
-// CHECKPOINTS
-// ============================================================
-
-const checkpoints = [
-
-    {
-        x: 1830,
-        y: 400,
-
-        ancho: 35,
-        alto: 80,
-
-        activado: false,
-
-        respawnX: 1880,
-        respawnY: 430
-    },
-
-    {
-        x: 3850,
-        y: 400,
-
-        ancho: 35,
-        alto: 80,
-
-        activado: false,
-
-        respawnX: 3980,
-        respawnY: 430
-    }
-];
-
-// ============================================================
-// ENEMIGOS
-// ============================================================
-
-const enemigos = [
-
-    {
-        xInicial: 170,
-        x: 170,
-        y: 440,
-
-        ancho: 38,
-        alto: 40,
-
-        velocidad: 1.3,
-        direccion: 1,
-
-        limiteIzquierda: 100,
-        limiteDerecha: 300,
-
-        vivo: true
-    },
-
-    {
-        xInicial: 1500,
-        x: 1500,
-        y: 320,
-
-        ancho: 38,
-        alto: 40,
-
-        velocidad: 1.5,
-        direccion: 1,
-
-        limiteIzquierda: 1490,
-        limiteDerecha: 1650,
-
-        vivo: true
-    },
-
-    {
-        xInicial: 2000,
-        x: 2000,
-        y: 440,
-
-        ancho: 38,
-        alto: 40,
-
-        velocidad: 1.8,
-        direccion: 1,
-
-        limiteIzquierda: 1970,
-        limiteDerecha: 2100,
-
-        vivo: true
-    },
-
-    {
-        xInicial: 2810,
-        x: 2810,
-        y: 260,
-
-        ancho: 38,
-        alto: 40,
-
-        velocidad: 1.7,
-        direccion: 1,
-
-        limiteIzquierda: 2780,
-        limiteDerecha: 2890,
-
-        vivo: true
-    },
-
-    {
-        xInicial: 4000,
-        x: 4000,
-        y: 440,
-
-        ancho: 38,
-        alto: 40,
-
-        velocidad: 2,
-        direccion: 1,
-
-        limiteIzquierda: 3980,
-        limiteDerecha: 4100,
-
-        vivo: true
-    },
-
-    {
-        xInicial: 4550,
-        x: 4550,
-        y: 440,
-
-        ancho: 38,
-        alto: 40,
-
-        velocidad: 2.2,
-        direccion: 1,
-
-        limiteIzquierda: 4500,
-        limiteDerecha: 4680,
-
-        vivo: true
-    }
-];
-
-// ============================================================
-// LOS 4 CONCEPTOS DEL NIVEL
-// ============================================================
-
-const bloquesConceptos = [
-
-    {
-        conceptoId: 1,
-
-        x: 590,
-        y: 390,
-
-        ancho: 44,
-        alto: 44,
-
-        recogido: false
-    },
-
-    {
-        conceptoId: 2,
-
-        x: 1270,
-        y: 170,
-
-        ancho: 44,
-        alto: 44,
-
-        recogido: false
-    },
-
-    {
-        conceptoId: 3,
-
-        x: 3075,
-        y: 150,
-
-        ancho: 44,
-        alto: 44,
-
-        recogido: false
-    },
-
-    {
-        conceptoId: 4,
-
-        x: 4310,
-        y: 190,
-
-        ancho: 44,
-        alto: 44,
-
-        recogido: false
-    }
-];
-
-// ============================================================
-// META
-// ============================================================
-
-const meta = {
-
-    x: 4840,
-    y: 370,
-
-    ancho: 80,
-    alto: 110
 };
 
 // ============================================================
@@ -582,17 +710,22 @@ function crearParticulas(
 
         particulas.push({
 
-            x: x,
-            y: y,
+            x,
+            y,
 
-            vx: (Math.random() - 0.5) * 5,
-            vy: (Math.random() - 1) * 5,
+            vx:
+                (Math.random() - 0.5) * 5,
 
-            vida: 40 + Math.random() * 25,
+            vy:
+                (Math.random() - 1) * 5,
 
-            tamano: 3 + Math.random() * 4,
+            vida:
+                40 + Math.random() * 25,
 
-            tipo: tipo
+            tamano:
+                3 + Math.random() * 4,
+
+            tipo
         });
     }
 }
@@ -624,26 +757,37 @@ function dibujarParticulas() {
 
     particulas.forEach(p => {
 
-        const pantallaX = p.x - camaraX;
+        const x =
+            p.x - camaraX;
 
         if (p.tipo === "danio") {
 
-            ctx.fillStyle = "#ff4057";
+            ctx.fillStyle =
+                "#ff4057";
 
-        } else if (p.tipo === "checkpoint") {
+        } else if (
+            p.tipo === "checkpoint"
+        ) {
 
-            ctx.fillStyle = "#ffcc44";
+            ctx.fillStyle =
+                "#ffcc44";
 
         } else {
 
-            ctx.fillStyle = "#56b7ff";
+            ctx.fillStyle =
+                nivelActual === 2
+                    ? "#00ff66"
+                    : "#56b7ff";
         }
 
         ctx.globalAlpha =
-            Math.max(0, p.vida / 60);
+            Math.max(
+                0,
+                p.vida / 60
+            );
 
         ctx.fillRect(
-            pantallaX,
+            x,
             p.y,
             p.tamano,
             p.tamano
@@ -654,7 +798,7 @@ function dibujarParticulas() {
 }
 
 // ============================================================
-// MENSAJES TEMPORALES
+// MENSAJES
 // ============================================================
 
 function mostrarMensaje(
@@ -682,7 +826,7 @@ function dibujarMensaje() {
 
     if (!mensajeTemporal) return;
 
-    const ancho = 470;
+    const ancho = 500;
     const alto = 55;
 
     const x =
@@ -691,7 +835,7 @@ function dibujarMensaje() {
     const y = 65;
 
     ctx.fillStyle =
-        "rgba(9, 11, 22, 0.92)";
+        "rgba(9,11,22,0.94)";
 
     ctx.fillRect(
         x,
@@ -700,7 +844,11 @@ function dibujarMensaje() {
         alto
     );
 
-    ctx.strokeStyle = "#4cff88";
+    ctx.strokeStyle =
+        nivelActual === 2
+            ? "#00ff66"
+            : "#4cff88";
+
     ctx.lineWidth = 2;
 
     ctx.strokeRect(
@@ -727,21 +875,139 @@ function dibujarMensaje() {
 }
 
 // ============================================================
-// COLISIÓN GENERAL
+// COLISIÓN
 // ============================================================
 
 function hayColision(a, b) {
 
     return (
-
         a.x < b.x + b.ancho &&
-
         a.x + a.ancho > b.x &&
-
         a.y < b.y + b.alto &&
-
         a.y + a.alto > b.y
     );
+}
+
+// ============================================================
+// CLONAR OBJETOS
+// ============================================================
+
+function copiarObjetos(datos) {
+
+    return datos.map(
+        objeto => ({
+            ...objeto
+        })
+    );
+}
+
+// ============================================================
+// CARGAR NIVEL
+// ============================================================
+
+function cargarDatosNivel(numero) {
+
+    const datos =
+        niveles[numero];
+
+    if (!datos) {
+
+        console.error(
+            `El nivel ${numero} no existe.`
+        );
+
+        return false;
+    }
+
+    anchoMapa = datos.ancho;
+
+    plataformas =
+        copiarObjetos(
+            datos.plataformas
+        );
+
+    plataformasMoviles =
+        copiarObjetos(
+            datos.plataformasMoviles
+        );
+
+    obstaculos =
+        copiarObjetos(
+            datos.obstaculos
+        );
+
+    checkpoints =
+        copiarObjetos(
+            datos.checkpoints
+        );
+
+    enemigos =
+        copiarObjetos(
+            datos.enemigos
+        );
+
+    bloquesConceptos =
+        copiarObjetos(
+            datos.conceptos
+        );
+
+    meta = {
+        ...datos.meta
+    };
+
+    // Preparar plataformas móviles.
+
+    plataformasMoviles.forEach(
+        plataforma => {
+
+            plataforma.direccion = 1;
+
+            plataforma.xAnterior =
+                plataforma.x;
+
+            plataforma.yAnterior =
+                plataforma.y;
+
+            plataforma.deltaX = 0;
+            plataforma.deltaY = 0;
+        }
+    );
+
+    // Checkpoints.
+
+    checkpoints.forEach(
+        checkpoint => {
+
+            checkpoint.activado =
+                false;
+        }
+    );
+
+    // Enemigos.
+
+    enemigos.forEach(
+        enemigo => {
+
+            enemigo.xInicial =
+                enemigo.x;
+
+            enemigo.direccion = 1;
+
+            enemigo.vivo = true;
+        }
+    );
+
+    // Conceptos.
+
+    bloquesConceptos.forEach(
+        bloque => {
+
+            bloque.recogido =
+                false;
+        }
+    );
+
+    return true;
 }
 
 // ============================================================
@@ -750,9 +1016,13 @@ function hayColision(a, b) {
 
 function iniciarNivel(numero) {
 
+    if (!niveles[numero]) return;
+
     nivelActual = numero;
 
-    if (numero !== 1) return;
+    if (!cargarDatosNivel(numero)) {
+        return;
+    }
 
     mostrarPantalla("juego");
 
@@ -765,17 +1035,29 @@ function iniciarNivel(numero) {
     conceptosRecogidos = 0;
     metaAvisada = false;
 
-    respawnX = 100;
-    respawnY = 300;
+    const datos =
+        niveles[numero];
 
-    jugador.x = respawnX;
-    jugador.y = respawnY;
+    respawnX =
+        datos.inicioX;
+
+    respawnY =
+        datos.inicioY;
+
+    jugador.x =
+        respawnX;
+
+    jugador.y =
+        respawnY;
 
     jugador.velocidadX = 0;
     jugador.velocidadY = 0;
 
     jugador.enSuelo = false;
     jugador.mirando = 1;
+
+    jugador.plataformaActual =
+        null;
 
     invulnerable = false;
     tiempoInvulnerable = 0;
@@ -785,28 +1067,28 @@ function iniciarNivel(numero) {
 
     particulas.length = 0;
 
-    bloquesConceptos.forEach(bloque => {
-        bloque.recogido = false;
-    });
-
-    checkpoints.forEach(checkpoint => {
-        checkpoint.activado = false;
-    });
-
-    reiniciarEnemigos();
-
     actualizarHUD();
 
-    mostrarMensaje(
-        "OBJETIVO: RECUPERA LOS 4 ARCHIVOS DEL SISTEMA",
-        220
-    );
+    if (numero === 1) {
+
+        mostrarMensaje(
+            "OBJETIVO: RECUPERA LOS 4 ARCHIVOS DEL SISTEMA",
+            220
+        );
+
+    } else if (numero === 2) {
+
+        mostrarMensaje(
+            "TERMINAL: RECUPERA LOS 4 ARCHIVOS DE PROCESO",
+            220
+        );
+    }
 
     juegoActivo = true;
 }
 
 // ============================================================
-// SALIR DEL JUEGO
+// SALIR
 // ============================================================
 
 function salirDelJuego() {
@@ -815,6 +1097,7 @@ function salirDelJuego() {
     juegoPausado = false;
 
     limpiarTeclas();
+
     ocultarTodosLosModales();
 
     mostrarPantalla("niveles");
@@ -827,13 +1110,19 @@ function salirDelJuego() {
 function actualizarHUD() {
 
     const hudVidas =
-        document.getElementById("hudVidas");
+        document.getElementById(
+            "hudVidas"
+        );
 
     const hudNivel =
-        document.getElementById("hudNivel");
+        document.getElementById(
+            "hudNivel"
+        );
 
     const hudConceptos =
-        document.getElementById("hudConceptos");
+        document.getElementById(
+            "hudConceptos"
+        );
 
     if (hudVidas) {
 
@@ -900,28 +1189,192 @@ function moverJugador() {
 }
 
 // ============================================================
+// PLATAFORMAS MÓVILES
+// ============================================================
+
+function actualizarPlataformasMoviles() {
+
+    plataformasMoviles.forEach(
+        plataforma => {
+
+            plataforma.xAnterior =
+                plataforma.x;
+
+            plataforma.yAnterior =
+                plataforma.y;
+
+            if (
+                plataforma.eje === "x"
+            ) {
+
+                plataforma.x +=
+                    plataforma.velocidad *
+                    plataforma.direccion;
+
+                if (
+                    plataforma.x >=
+                    plataforma.maximo
+                ) {
+
+                    plataforma.x =
+                        plataforma.maximo;
+
+                    plataforma.direccion =
+                        -1;
+                }
+
+                if (
+                    plataforma.x <=
+                    plataforma.minimo
+                ) {
+
+                    plataforma.x =
+                        plataforma.minimo;
+
+                    plataforma.direccion =
+                        1;
+                }
+            }
+
+            if (
+                plataforma.eje === "y"
+            ) {
+
+                plataforma.y +=
+                    plataforma.velocidad *
+                    plataforma.direccion;
+
+                if (
+                    plataforma.y >=
+                    plataforma.maximo
+                ) {
+
+                    plataforma.y =
+                        plataforma.maximo;
+
+                    plataforma.direccion =
+                        -1;
+                }
+
+                if (
+                    plataforma.y <=
+                    plataforma.minimo
+                ) {
+
+                    plataforma.y =
+                        plataforma.minimo;
+
+                    plataforma.direccion =
+                        1;
+                }
+            }
+
+            plataforma.deltaX =
+                plataforma.x -
+                plataforma.xAnterior;
+
+            plataforma.deltaY =
+                plataforma.y -
+                plataforma.yAnterior;
+        }
+    );
+}
+
+// ============================================================
+// TRANSPORTE SOBRE PLATAFORMAS MÓVILES
+// ============================================================
+
+function transportarJugadorConPlataforma() {
+
+    const plataforma =
+        jugador.plataformaActual;
+
+    if (!plataforma) return;
+
+    const pies =
+        jugador.y +
+        jugador.alto;
+
+    const sobrePlataforma =
+        Math.abs(
+            pies -
+            plataforma.yAnterior
+        ) <= 6;
+
+    const dentroHorizontalmente =
+        jugador.x +
+            jugador.ancho >
+            plataforma.xAnterior &&
+        jugador.x <
+            plataforma.xAnterior +
+            plataforma.ancho;
+
+    if (
+        !sobrePlataforma ||
+        !dentroHorizontalmente
+    ) {
+
+        jugador.plataformaActual =
+            null;
+
+        return;
+    }
+
+    // El personaje recibe exactamente el mismo
+    // desplazamiento que la plataforma.
+
+    jugador.x +=
+        plataforma.deltaX;
+
+    jugador.y +=
+        plataforma.deltaY;
+}
+
+// ============================================================
+// TODAS LAS PLATAFORMAS
+// ============================================================
+
+function obtenerTodasLasPlataformas() {
+
+    return [
+        ...plataformas,
+        ...plataformasMoviles
+    ];
+}
+
+// ============================================================
 // FÍSICA DEL JUGADOR
 //
-// Aquí conservamos lo que querías:
+// Las plataformas siguen siendo sólidas por los cuatro lados.
 //
-// PLATAFORMAS SÓLIDAS EN LOS 4 LADOS.
-//
-// Primero resolvemos movimiento horizontal.
-// Después resolvemos movimiento vertical.
+// Esta versión utiliza posiciones anteriores para evitar
+// reposicionamientos incorrectos sobre plataformas móviles.
 // ============================================================
 
 function actualizarJugador() {
 
+    // ========================================================
+    // TRANSPORTE
+    // ========================================================
+
+    transportarJugadorConPlataforma();
+
     moverJugador();
 
+    const todas =
+        obtenerTodasLasPlataformas();
+
     // ========================================================
-    // MOVIMIENTO HORIZONTAL
+    // EJE X
     // ========================================================
+
+    const xAnterior =
+        jugador.x;
 
     jugador.x +=
         jugador.velocidadX;
 
-    plataformas.forEach(
+    todas.forEach(
         plataforma => {
 
             if (
@@ -933,40 +1386,55 @@ function actualizarJugador() {
                 return;
             }
 
-            // Chocamos con el lado
-            // izquierdo de la plataforma.
+            const derechaAnterior =
+                xAnterior +
+                jugador.ancho;
+
+            const izquierdaAnterior =
+                xAnterior;
+
+            // Entró desde la izquierda.
+
             if (
-                jugador.velocidadX > 0
+                derechaAnterior <=
+                plataforma.x + 5
             ) {
 
                 jugador.x =
                     plataforma.x -
                     jugador.ancho;
+
+                jugador.velocidadX = 0;
+
+                return;
             }
 
-            // Chocamos con el lado
-            // derecho de la plataforma.
-            else if (
-                jugador.velocidadX < 0
+            // Entró desde la derecha.
+
+            if (
+                izquierdaAnterior >=
+                plataforma.x +
+                plataforma.ancho -
+                5
             ) {
 
                 jugador.x =
                     plataforma.x +
                     plataforma.ancho;
-            }
 
-            jugador.velocidadX = 0;
+                jugador.velocidadX = 0;
+            }
         }
     );
 
-    // No salir por izquierda.
+    // Límites.
+
     if (jugador.x < 0) {
 
         jugador.x = 0;
         jugador.velocidadX = 0;
     }
 
-    // No salir por derecha.
     if (
         jugador.x +
         jugador.ancho >
@@ -981,18 +1449,26 @@ function actualizarJugador() {
     }
 
     // ========================================================
-    // MOVIMIENTO VERTICAL
+    // EJE Y
     // ========================================================
 
     jugador.velocidadY +=
         gravedad;
 
+    const yAnterior =
+        jugador.y;
+
+    const piesAnteriores =
+        yAnterior +
+        jugador.alto;
+
     jugador.y +=
         jugador.velocidadY;
 
     jugador.enSuelo = false;
+    jugador.plataformaActual = null;
 
-    plataformas.forEach(
+    todas.forEach(
         plataforma => {
 
             if (
@@ -1004,12 +1480,99 @@ function actualizarJugador() {
                 return;
             }
 
-            // ------------------------------------------------
-            // CAER ENCIMA
-            // ------------------------------------------------
+            const parteSuperior =
+                plataforma.y;
+
+            const parteInferior =
+                plataforma.y +
+                plataforma.alto;
+
+            // =================================================
+            // ATERRIZAR DESDE ARRIBA
+            // =================================================
 
             if (
-                jugador.velocidadY > 0
+                jugador.velocidadY >= 0 &&
+                piesAnteriores <=
+                    parteSuperior + 8
+            ) {
+
+                jugador.y =
+                    parteSuperior -
+                    jugador.alto;
+
+                jugador.velocidadY = 0;
+
+                jugador.enSuelo = true;
+
+                if (
+                    plataformasMoviles.includes(
+                        plataforma
+                    )
+                ) {
+
+                    jugador.plataformaActual =
+                        plataforma;
+                }
+
+                return;
+            }
+
+            // =================================================
+            // GOLPEAR DESDE ABAJO
+            // =================================================
+
+            if (
+                jugador.velocidadY < 0 &&
+                yAnterior >=
+                    parteInferior - 8
+            ) {
+
+                jugador.y =
+                    parteInferior;
+
+                jugador.velocidadY = 0;
+            }
+        }
+    );
+
+    // ========================================================
+    // TOLERANCIA DE APOYO
+    //
+    // Corrige pequeñas diferencias de pocos píxeles cuando
+    // una plataforma vertical cambia de posición.
+    // ========================================================
+
+    if (
+        !jugador.enSuelo &&
+        jugador.velocidadY >= 0
+    ) {
+
+        for (
+            const plataforma
+            of todas
+        ) {
+
+            const pies =
+                jugador.y +
+                jugador.alto;
+
+            const distancia =
+                plataforma.y -
+                pies;
+
+            const dentroX =
+                jugador.x +
+                    jugador.ancho >
+                    plataforma.x + 3 &&
+                jugador.x <
+                    plataforma.x +
+                    plataforma.ancho - 3;
+
+            if (
+                dentroX &&
+                distancia >= -4 &&
+                distancia <= 7
             ) {
 
                 jugador.y =
@@ -1019,27 +1582,24 @@ function actualizarJugador() {
                 jugador.velocidadY = 0;
 
                 jugador.enSuelo = true;
-            }
 
-            // ------------------------------------------------
-            // GOLPEAR DESDE ABAJO
-            // ------------------------------------------------
+                if (
+                    plataformasMoviles.includes(
+                        plataforma
+                    )
+                ) {
 
-            else if (
-                jugador.velocidadY < 0
-            ) {
+                    jugador.plataformaActual =
+                        plataforma;
+                }
 
-                jugador.y =
-                    plataforma.y +
-                    plataforma.alto;
-
-                jugador.velocidadY = 0;
+                break;
             }
         }
-    );
+    }
 
     // ========================================================
-    // CAÍDA AL VACÍO
+    // CAÍDA
     // ========================================================
 
     if (
@@ -1083,6 +1643,7 @@ function recibirDanio() {
     if (vidas <= 0) {
 
         gameOver();
+
         return;
     }
 
@@ -1104,6 +1665,9 @@ function respawn() {
     jugador.velocidadY = 0;
 
     jugador.enSuelo = false;
+
+    jugador.plataformaActual =
+        null;
 
     invulnerable = true;
 
@@ -1144,12 +1708,13 @@ function actualizarInvulnerabilidad() {
     ) {
 
         tiempoInvulnerable = 0;
+
         invulnerable = false;
     }
 }
 
 // ============================================================
-// PINCHOS
+// OBSTÁCULOS
 // ============================================================
 
 function comprobarObstaculos() {
@@ -1169,6 +1734,7 @@ function comprobarObstaculos() {
         ) {
 
             recibirDanio();
+
             break;
         }
     }
@@ -1217,7 +1783,7 @@ function comprobarCheckpoints() {
 }
 
 // ============================================================
-// ACTUALIZAR ENEMIGOS
+// ENEMIGOS
 // ============================================================
 
 function actualizarEnemigos() {
@@ -1225,9 +1791,7 @@ function actualizarEnemigos() {
     enemigos.forEach(
         enemigo => {
 
-            if (!enemigo.vivo) {
-                return;
-            }
+            if (!enemigo.vivo) return;
 
             enemigo.x +=
                 enemigo.velocidad *
@@ -1241,7 +1805,8 @@ function actualizarEnemigos() {
                 enemigo.x =
                     enemigo.limiteDerecha;
 
-                enemigo.direccion = -1;
+                enemigo.direccion =
+                    -1;
             }
 
             if (
@@ -1252,24 +1817,19 @@ function actualizarEnemigos() {
                 enemigo.x =
                     enemigo.limiteIzquierda;
 
-                enemigo.direccion = 1;
+                enemigo.direccion =
+                    1;
             }
         }
     );
 }
-
-// ============================================================
-// COLISIÓN CON ENEMIGOS
-// ============================================================
 
 function comprobarEnemigos() {
 
     enemigos.forEach(
         enemigo => {
 
-            if (!enemigo.vivo) {
-                return;
-            }
+            if (!enemigo.vivo) return;
 
             if (
                 !hayColision(
@@ -1280,21 +1840,14 @@ function comprobarEnemigos() {
                 return;
             }
 
-            const parteInferiorJugador =
+            const parteInferior =
                 jugador.y +
                 jugador.alto;
 
-            const cayendo =
-                jugador.velocidadY > 0;
-
             const golpeDesdeArriba =
-                cayendo &&
-                parteInferiorJugador <=
-                enemigo.y + 22;
-
-            // ------------------------------------------------
-            // SALTAMOS ENCIMA DEL BUG
-            // ------------------------------------------------
+                jugador.velocidadY > 0 &&
+                parteInferior <=
+                    enemigo.y + 22;
 
             if (golpeDesdeArriba) {
 
@@ -1304,7 +1857,6 @@ function comprobarEnemigos() {
                     enemigo.y -
                     jugador.alto;
 
-                // Pequeño rebote.
                 jugador.velocidadY =
                     -8.5;
 
@@ -1322,36 +1874,13 @@ function comprobarEnemigos() {
                 return;
             }
 
-            // ------------------------------------------------
-            // NOS TOCA POR UN COSTADO
-            // ------------------------------------------------
-
             recibirDanio();
         }
     );
 }
 
 // ============================================================
-// REINICIAR ENEMIGOS
-// ============================================================
-
-function reiniciarEnemigos() {
-
-    enemigos.forEach(
-        enemigo => {
-
-            enemigo.x =
-                enemigo.xInicial;
-
-            enemigo.direccion = 1;
-
-            enemigo.vivo = true;
-        }
-    );
-}
-
-// ============================================================
-// COMPROBAR CONCEPTOS
+// CONCEPTOS
 // ============================================================
 
 function comprobarConceptos() {
@@ -1359,9 +1888,7 @@ function comprobarConceptos() {
     bloquesConceptos.forEach(
         bloque => {
 
-            if (bloque.recogido) {
-                return;
-            }
+            if (bloque.recogido) return;
 
             if (
                 hayColision(
@@ -1378,10 +1905,6 @@ function comprobarConceptos() {
     );
 }
 
-// ============================================================
-// RECOGER CONCEPTO
-// ============================================================
-
 function recogerConcepto(bloque) {
 
     bloque.recogido = true;
@@ -1391,7 +1914,6 @@ function recogerConcepto(bloque) {
     actualizarHUD();
 
     crearParticulas(
-
         bloque.x +
             bloque.ancho / 2,
 
@@ -1399,7 +1921,6 @@ function recogerConcepto(bloque) {
             bloque.alto / 2,
 
         25,
-
         "normal"
     );
 
@@ -1441,53 +1962,72 @@ function recogerConcepto(bloque) {
             "placeholderImagen"
         );
 
-    titulo.textContent =
-        concepto.nombre;
-
-    definicion.textContent =
-        concepto.definicion;
-
-    if (concepto.imagen) {
-
-        imagen.src =
-            concepto.imagen;
-
-        imagen.style.display =
-            "block";
-
-        placeholder.style.display =
-            "none";
-
-    } else {
-
-        imagen.style.display =
-            "none";
-
-        placeholder.style.display =
-            "block";
+    if (titulo) {
+        titulo.textContent =
+            concepto.nombre;
     }
 
-    modal.classList.remove(
-        "oculto"
-    );
-}
+    if (definicion) {
+        definicion.textContent =
+            concepto.definicion;
+    }
 
-// ============================================================
-// CERRAR CONCEPTO
-// ============================================================
+    if (
+        imagen &&
+        placeholder
+    ) {
+
+        if (concepto.imagen) {
+
+            imagen.src =
+                concepto.imagen;
+
+            imagen.style.display =
+                "block";
+
+            placeholder.style.display =
+                "none";
+
+        } else {
+
+            imagen.removeAttribute(
+                "src"
+            );
+
+            imagen.style.display =
+                "none";
+
+            placeholder.style.display =
+                "block";
+        }
+    }
+
+    if (modal) {
+        modal.classList.remove(
+            "oculto"
+        );
+    }
+}
 
 function cerrarConcepto() {
 
-    document
-        .getElementById(
+    const modal =
+        document.getElementById(
             "modalConcepto"
-        )
-        .classList
-        .add("oculto");
+        );
+
+    if (modal) {
+
+        modal.classList.add(
+            "oculto"
+        );
+    }
 
     limpiarTeclas();
 
-    juegoPausado = false;
+    if (juegoActivo) {
+        juegoPausado = false;
+    }
 }
 
 // ============================================================
@@ -1508,7 +2048,6 @@ function comprobarMeta() {
         return;
     }
 
-    // Tenemos los cuatro conceptos.
     if (
         conceptosRecogidos >= 4
     ) {
@@ -1518,7 +2057,6 @@ function comprobarMeta() {
         return;
     }
 
-    // Nos faltan conceptos.
     if (!metaAvisada) {
 
         metaAvisada = true;
@@ -1526,10 +2064,6 @@ function comprobarMeta() {
         mostrarMetaBloqueada();
     }
 }
-
-// ============================================================
-// META BLOQUEADA
-// ============================================================
 
 function mostrarMetaBloqueada() {
 
@@ -1547,28 +2081,36 @@ function mostrarMetaBloqueada() {
             "textoMetaConceptos"
         );
 
-    texto.textContent =
-        `CONCEPTOS: ${conceptosRecogidos} / 4`;
+    if (texto) {
 
-    modal.classList.remove(
-        "oculto"
-    );
+        texto.textContent =
+            `CONCEPTOS: ${conceptosRecogidos} / 4`;
+    }
+
+    if (modal) {
+
+        modal.classList.remove(
+            "oculto"
+        );
+    }
 }
 
 function cerrarMetaBloqueada() {
 
-    document
-        .getElementById(
+    const modal =
+        document.getElementById(
             "modalMeta"
-        )
-        .classList
-        .add("oculto");
+        );
+
+    if (modal) {
+
+        modal.classList.add(
+            "oculto"
+        );
+    }
 
     limpiarTeclas();
 
-    // Alejamos un poco al jugador
-    // para que no vuelva a abrir
-    // inmediatamente el modal.
     jugador.x =
         meta.x - 80;
 
@@ -1588,7 +2130,6 @@ function completarNivel() {
     limpiarTeclas();
 
     crearParticulas(
-
         meta.x +
             meta.ancho / 2,
 
@@ -1596,24 +2137,29 @@ function completarNivel() {
             meta.alto / 2,
 
         40,
-
         "checkpoint"
     );
 
-    // Desbloqueamos el Nivel 2.
-    guardarNivelDesbloqueado(2);
+    if (nivelActual === 1) {
+        guardarNivelDesbloqueado(2);
+    }
 
-    document
-        .getElementById(
+    if (nivelActual === 2) {
+        guardarNivelDesbloqueado(3);
+    }
+
+    const modal =
+        document.getElementById(
             "modalNivelCompletado"
-        )
-        .classList
-        .remove("oculto");
-}
+        );
 
-// ============================================================
-// CONTINUAR DESPUÉS DE TERMINAR
-// ============================================================
+    if (modal) {
+
+        modal.classList.remove(
+            "oculto"
+        );
+    }
+}
 
 function continuarDespuesDeNivel() {
 
@@ -1622,19 +2168,20 @@ function continuarDespuesDeNivel() {
 
     limpiarTeclas();
 
-    document
-        .getElementById(
+    const modal =
+        document.getElementById(
             "modalNivelCompletado"
-        )
-        .classList
-        .add("oculto");
+        );
+
+    if (modal) {
+
+        modal.classList.add(
+            "oculto"
+        );
+    }
 
     mostrarPantalla("niveles");
 }
-
-// ============================================================
-// OCULTAR MODALES
-// ============================================================
 
 function ocultarTodosLosModales() {
 
@@ -1660,7 +2207,8 @@ function actualizarCamara() {
         canvas.width / 2;
 
     camaraX =
-        jugador.x - centro;
+        jugador.x -
+        centro;
 
     if (camaraX < 0) {
         camaraX = 0;
@@ -1670,7 +2218,7 @@ function actualizarCamara() {
         Math.max(
             0,
             anchoMapa -
-            canvas.width
+                canvas.width
         );
 
     if (camaraX > limite) {
@@ -1679,13 +2227,13 @@ function actualizarCamara() {
 }
 
 // ============================================================
-// FONDO
+// FONDO NIVEL 1
 // ============================================================
 
-function dibujarFondo() {
+function dibujarFondoNivel1() {
 
-    // Fondo principal
-    ctx.fillStyle = "#0d1122";
+    ctx.fillStyle =
+        "#0d1122";
 
     ctx.fillRect(
         0,
@@ -1693,74 +2241,6 @@ function dibujarFondo() {
         canvas.width,
         canvas.height
     );
-
-    // ========================================================
-    // PANELES LEJANOS
-    // ========================================================
-
-    const offsetLejano =
-        -(camaraX * 0.08) % 320;
-
-    for (
-        let x =
-            offsetLejano - 320;
-
-        x <
-            canvas.width + 320;
-
-        x += 320
-    ) {
-
-        ctx.fillStyle =
-            "#111a31";
-
-        ctx.fillRect(
-            x + 35,
-            70,
-            210,
-            105
-        );
-
-        ctx.strokeStyle =
-            "#182b46";
-
-        ctx.lineWidth = 2;
-
-        ctx.strokeRect(
-            x + 35,
-            70,
-            210,
-            105
-        );
-
-        ctx.fillStyle =
-            "#17304a";
-
-        ctx.fillRect(
-            x + 60,
-            95,
-            90,
-            8
-        );
-
-        ctx.fillRect(
-            x + 60,
-            115,
-            140,
-            6
-        );
-
-        ctx.fillRect(
-            x + 60,
-            135,
-            110,
-            6
-        );
-    }
-
-    // ========================================================
-    // CUADRÍCULA
-    // ========================================================
 
     ctx.strokeStyle =
         "#182346";
@@ -1806,67 +2286,6 @@ function dibujarFondo() {
         ctx.stroke();
     }
 
-    // ========================================================
-    // CIRCUITOS DECORATIVOS
-    // ========================================================
-
-    ctx.strokeStyle =
-        "rgba(76,255,136,0.12)";
-
-    ctx.lineWidth = 3;
-
-    const circuitoOffset =
-        -(camaraX * 0.35) % 600;
-
-    for (
-        let x =
-            circuitoOffset - 600;
-
-        x <
-            canvas.width + 600;
-
-        x += 600
-    ) {
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            x,
-            210
-        );
-
-        ctx.lineTo(
-            x + 100,
-            210
-        );
-
-        ctx.lineTo(
-            x + 140,
-            250
-        );
-
-        ctx.lineTo(
-            x + 260,
-            250
-        );
-
-        ctx.stroke();
-
-        ctx.fillStyle =
-            "rgba(76,255,136,0.20)";
-
-        ctx.fillRect(
-            x + 255,
-            245,
-            10,
-            10
-        );
-    }
-
-    // ========================================================
-    // NOMBRES DE LAS ZONAS
-    // ========================================================
-
     ctx.fillStyle =
         "rgba(76,255,136,0.16)";
 
@@ -1877,28 +2296,24 @@ function dibujarFondo() {
 
         {
             x: 350,
-            y: 50,
             texto:
                 "BOOT_SEQUENCE"
         },
 
         {
             x: 1650,
-            y: 55,
             texto:
                 "PROCESS_MANAGER"
         },
 
         {
             x: 2800,
-            y: 50,
             texto:
                 "CPU_QUEUE"
         },
 
         {
             x: 4050,
-            y: 55,
             texto:
                 "SYSTEM_CORE"
         }
@@ -1908,150 +2323,204 @@ function dibujarFondo() {
         item => {
 
             ctx.fillText(
-
                 item.texto,
-
-                item.x -
-                    camaraX,
-
-                item.y
+                item.x - camaraX,
+                50
             );
         }
     );
 }
 
 // ============================================================
-// CARTELES
+// FONDO NIVEL 2
 // ============================================================
 
-function dibujarCarteles() {
+function dibujarFondoNivel2() {
 
-    const carteles = [
+    ctx.fillStyle =
+        "#050b08";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.strokeStyle =
+        "rgba(0,255,102,0.08)";
+
+    ctx.lineWidth = 1;
+
+    const offset =
+        -(camaraX * 0.15) % 60;
+
+    for (
+        let x = offset;
+        x < canvas.width;
+        x += 60
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(x, 0);
+
+        ctx.lineTo(
+            x,
+            canvas.height
+        );
+
+        ctx.stroke();
+    }
+
+    for (
+        let y = 0;
+        y < canvas.height;
+        y += 60
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(0, y);
+
+        ctx.lineTo(
+            canvas.width,
+            y
+        );
+
+        ctx.stroke();
+    }
+
+    const desplazamiento =
+        -(camaraX * 0.08) % 420;
+
+    for (
+        let x =
+            desplazamiento - 420;
+
+        x <
+            canvas.width + 420;
+
+        x += 420
+    ) {
+
+        ctx.fillStyle =
+            "rgba(0,20,10,0.65)";
+
+        ctx.fillRect(
+            x + 30,
+            70,
+            300,
+            145
+        );
+
+        ctx.strokeStyle =
+            "rgba(0,255,102,0.18)";
+
+        ctx.strokeRect(
+            x + 30,
+            70,
+            300,
+            145
+        );
+
+        ctx.fillStyle =
+            "rgba(0,255,102,0.25)";
+
+        ctx.font =
+            "12px Courier New";
+
+        ctx.fillText(
+            "C:\\SYSTEM> process --status",
+            x + 45,
+            100
+        );
+
+        ctx.fillText(
+            "PROCESS RUNNING...",
+            x + 45,
+            125
+        );
+
+        ctx.fillText(
+            "THREAD ACTIVE",
+            x + 45,
+            150
+        );
+
+        ctx.fillText(
+            "SCHEDULER: READY",
+            x + 45,
+            175
+        );
+
+        ctx.fillText(
+            "> _",
+            x + 45,
+            200
+        );
+    }
+
+    ctx.fillStyle =
+        "rgba(0,255,102,0.18)";
+
+    ctx.font =
+        "bold 20px Courier New";
+
+    const zonas = [
 
         {
-            x: 70,
-            y: 335,
-
-            ancho: 240,
-
-            titulo:
-                "SYSTEM BOOT",
-
-            linea1:
-                "RECUPERA 4 ARCHIVOS",
-
-            linea2:
-                "PARA ABRIR EL NUCLEO"
+            x: 200,
+            texto:
+                "TERMINAL_SESSION"
         },
 
         {
-            x: 1765,
-            y: 340,
-
-            ancho: 170,
-
-            titulo:
-                "CHECKPOINT",
-
-            linea1:
-                "SAVE STATE",
-
-            linea2: ""
+            x: 1800,
+            texto:
+                "PROCESS_TABLE"
         },
 
         {
-            x: 3750,
-            y: 320,
+            x: 3000,
+            texto:
+                "EXEC_QUEUE"
+        },
 
-            ancho: 180,
-
-            titulo:
-                "WARNING",
-
-            linea1:
-                "CORE SECURITY",
-
-            linea2:
-                "ACTIVE"
+        {
+            x: 4700,
+            texto:
+                "ROOT_ACCESS"
         }
     ];
 
-    carteles.forEach(
-        cartel => {
-
-            const x =
-                cartel.x -
-                camaraX;
-
-            if (
-                x + cartel.ancho < 0 ||
-                x > canvas.width
-            ) {
-                return;
-            }
-
-            ctx.fillStyle =
-                "rgba(9,11,22,0.92)";
-
-            ctx.fillRect(
-                x,
-                cartel.y,
-                cartel.ancho,
-                70
-            );
-
-            ctx.strokeStyle =
-                "#56b7ff";
-
-            ctx.lineWidth = 2;
-
-            ctx.strokeRect(
-                x,
-                cartel.y,
-                cartel.ancho,
-                70
-            );
-
-            ctx.fillStyle =
-                "#4cff88";
-
-            ctx.font =
-                "bold 13px Courier New";
+    zonas.forEach(
+        zona => {
 
             ctx.fillText(
-                cartel.titulo,
-                x + 10,
-                cartel.y + 20
+                zona.texto,
+                zona.x -
+                    camaraX,
+                45
             );
-
-            ctx.fillStyle =
-                "#aeb8cc";
-
-            ctx.font =
-                "11px Courier New";
-
-            ctx.fillText(
-                cartel.linea1,
-                x + 10,
-                cartel.y + 40
-            );
-
-            if (
-                cartel.linea2
-            ) {
-
-                ctx.fillText(
-                    cartel.linea2,
-                    x + 10,
-                    cartel.y + 56
-                );
-            }
         }
     );
 }
 
+function dibujarFondo() {
+
+    if (nivelActual === 2) {
+
+        dibujarFondoNivel2();
+
+    } else {
+
+        dibujarFondoNivel1();
+    }
+}
+
 // ============================================================
-// PLATAFORMAS
+// PLATAFORMAS FIJAS
 // ============================================================
 
 function dibujarPlataformas() {
@@ -2072,9 +2541,10 @@ function dibujarPlataformas() {
                 return;
             }
 
-            // Cuerpo
             ctx.fillStyle =
-                "#28324f";
+                nivelActual === 2
+                    ? "#15281d"
+                    : "#28324f";
 
             ctx.fillRect(
                 x,
@@ -2083,9 +2553,10 @@ function dibujarPlataformas() {
                 plataforma.alto
             );
 
-            // Línea superior
             ctx.fillStyle =
-                "#4cff88";
+                nivelActual === 2
+                    ? "#00ff66"
+                    : "#4cff88";
 
             ctx.fillRect(
                 x,
@@ -2094,31 +2565,29 @@ function dibujarPlataformas() {
                 6
             );
 
-            // Línea inferior
             ctx.fillStyle =
-                "#08752e";
+                nivelActual === 2
+                    ? "#07491f"
+                    : "#08752e";
 
             ctx.fillRect(
                 x,
                 plataforma.y +
                     plataforma.alto -
                     4,
-
                 plataforma.ancho,
-
                 4
             );
 
-            // Detalles internos
             ctx.fillStyle =
-                "#1b2238";
+                nivelActual === 2
+                    ? "#0b1710"
+                    : "#1b2238";
 
             for (
                 let detalle = 15;
-
                 detalle <
                     plataforma.ancho;
-
                 detalle += 45
             ) {
 
@@ -2129,27 +2598,77 @@ function dibujarPlataformas() {
                     5
                 );
             }
+        }
+    );
+}
 
-            // Remaches
+// ============================================================
+// PLATAFORMAS MÓVILES
+// ============================================================
+
+function dibujarPlataformasMoviles() {
+
+    plataformasMoviles.forEach(
+        plataforma => {
+
+            const x =
+                plataforma.x -
+                camaraX;
+
             ctx.fillStyle =
-                "#53617d";
+                "rgba(0,255,102,0.13)";
 
-            for (
-                let remache = 12;
+            ctx.fillRect(
+                x - 5,
+                plataforma.y - 5,
+                plataforma.ancho + 10,
+                plataforma.alto + 10
+            );
 
-                remache <
-                    plataforma.ancho;
+            ctx.fillStyle =
+                "#174329";
 
-                remache += 70
-            ) {
+            ctx.fillRect(
+                x,
+                plataforma.y,
+                plataforma.ancho,
+                plataforma.alto
+            );
 
-                ctx.fillRect(
-                    x + remache,
-                    plataforma.y + 9,
-                    4,
-                    4
-                );
-            }
+            ctx.strokeStyle =
+                "#00ff66";
+
+            ctx.lineWidth = 2;
+
+            ctx.strokeRect(
+                x,
+                plataforma.y,
+                plataforma.ancho,
+                plataforma.alto
+            );
+
+            ctx.fillStyle =
+                "#00ff66";
+
+            ctx.font =
+                "bold 15px Courier New";
+
+            ctx.textAlign =
+                "center";
+
+            ctx.fillText(
+                plataforma.eje === "x"
+                    ? "← MOVE →"
+                    : "↑ MOVE ↓",
+
+                x +
+                    plataforma.ancho / 2,
+
+                plataforma.y + 17
+            );
+
+            ctx.textAlign =
+                "left";
         }
     );
 }
@@ -2167,17 +2686,10 @@ function dibujarObstaculos() {
                 obstaculo.x -
                 camaraX;
 
-            if (
-                x > canvas.width ||
-                x +
-                    obstaculo.ancho <
-                    0
-            ) {
-                return;
-            }
-
             ctx.fillStyle =
-                "#ff4057";
+                nivelActual === 2
+                    ? "#ff315c"
+                    : "#ff4057";
 
             const cantidad = 4;
 
@@ -2194,7 +2706,6 @@ function dibujarObstaculos() {
                 ctx.beginPath();
 
                 ctx.moveTo(
-
                     x +
                         i *
                         anchoPincho,
@@ -2204,18 +2715,15 @@ function dibujarObstaculos() {
                 );
 
                 ctx.lineTo(
-
                     x +
                         i *
                         anchoPincho +
-                        anchoPincho /
-                        2,
+                        anchoPincho / 2,
 
                     obstaculo.y
                 );
 
                 ctx.lineTo(
-
                     x +
                         (i + 1) *
                         anchoPincho,
@@ -2228,21 +2736,6 @@ function dibujarObstaculos() {
 
                 ctx.fill();
             }
-
-            // Base
-            ctx.fillStyle =
-                "#9e2438";
-
-            ctx.fillRect(
-                x,
-                obstaculo.y +
-                    obstaculo.alto -
-                    4,
-
-                obstaculo.ancho,
-
-                4
-            );
         }
     );
 }
@@ -2260,7 +2753,6 @@ function dibujarCheckpoints() {
                 checkpoint.x -
                 camaraX;
 
-            // Poste
             ctx.fillStyle =
                 "#cccccc";
 
@@ -2271,7 +2763,6 @@ function dibujarCheckpoints() {
                 checkpoint.alto
             );
 
-            // Terminal
             ctx.fillStyle =
                 checkpoint.activado
                     ? "#4cff88"
@@ -2284,9 +2775,8 @@ function dibujarCheckpoints() {
                 30
             );
 
-            // Pantalla
             ctx.fillStyle =
-                "#11162a";
+                "#07110c";
 
             ctx.fillRect(
                 x + 12,
@@ -2295,11 +2785,10 @@ function dibujarCheckpoints() {
                 17
             );
 
-            // Luz
             const pulso =
                 Math.sin(
                     frameJuego *
-                    0.08
+                        0.08
                 ) > 0;
 
             if (
@@ -2319,25 +2808,12 @@ function dibujarCheckpoints() {
                     7
                 );
             }
-
-            // Base
-            ctx.fillStyle =
-                "#596174";
-
-            ctx.fillRect(
-                x - 5,
-                checkpoint.y +
-                    checkpoint.alto -
-                    5,
-                20,
-                5
-            );
         }
     );
 }
 
 // ============================================================
-// ENEMIGOS — BUGS DIGITALES
+// ENEMIGOS
 // ============================================================
 
 function dibujarEnemigos() {
@@ -2345,15 +2821,13 @@ function dibujarEnemigos() {
     enemigos.forEach(
         enemigo => {
 
-            if (!enemigo.vivo) {
-                return;
-            }
+            if (!enemigo.vivo) return;
 
             const x =
                 enemigo.x -
                 camaraX;
 
-            const movimientoPatas =
+            const patas =
                 Math.sin(
                     frameJuego *
                         0.25 +
@@ -2361,7 +2835,6 @@ function dibujarEnemigos() {
                         0.01
                 ) * 3;
 
-            // Patas
             ctx.strokeStyle =
                 "#ff4057";
 
@@ -2378,7 +2851,7 @@ function dibujarEnemigos() {
                 x + 2,
                 enemigo.y +
                     36 +
-                    movimientoPatas
+                    patas
             );
 
             ctx.stroke();
@@ -2394,43 +2867,11 @@ function dibujarEnemigos() {
                 x + 36,
                 enemigo.y +
                     36 -
-                    movimientoPatas
+                    patas
             );
 
             ctx.stroke();
 
-            // Antenas
-            ctx.lineWidth = 2;
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                x + 12,
-                enemigo.y + 5
-            );
-
-            ctx.lineTo(
-                x + 7,
-                enemigo.y - 5
-            );
-
-            ctx.stroke();
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                x + 26,
-                enemigo.y + 5
-            );
-
-            ctx.lineTo(
-                x + 31,
-                enemigo.y - 5
-            );
-
-            ctx.stroke();
-
-            // Cuerpo
             ctx.fillStyle =
                 "#ff4057";
 
@@ -2441,7 +2882,6 @@ function dibujarEnemigos() {
                 enemigo.alto - 10
             );
 
-            // Cabeza
             ctx.fillStyle =
                 "#ff6b7d";
 
@@ -2452,9 +2892,8 @@ function dibujarEnemigos() {
                 18
             );
 
-            // Pantalla
             ctx.fillStyle =
-                "#1a1020";
+                "#101414";
 
             ctx.fillRect(
                 x + 8,
@@ -2463,9 +2902,10 @@ function dibujarEnemigos() {
                 9
             );
 
-            // Ojos
             ctx.fillStyle =
-                "#ffcc44";
+                nivelActual === 2
+                    ? "#00ff66"
+                    : "#ffcc44";
 
             ctx.fillRect(
                 x + 12,
@@ -2485,7 +2925,7 @@ function dibujarEnemigos() {
 }
 
 // ============================================================
-// CONCEPTOS
+// DIBUJAR CONCEPTOS
 // ============================================================
 
 function dibujarConceptos() {
@@ -2493,9 +2933,7 @@ function dibujarConceptos() {
     bloquesConceptos.forEach(
         bloque => {
 
-            if (bloque.recogido) {
-                return;
-            }
+            if (bloque.recogido) return;
 
             const flotacion =
                 Math.sin(
@@ -2513,9 +2951,15 @@ function dibujarConceptos() {
                 bloque.x -
                 camaraX;
 
-            // Resplandor
+            const color =
+                nivelActual === 2
+                    ? "#00ff88"
+                    : "#56b7ff";
+
             ctx.fillStyle =
-                "rgba(86,183,255,0.16)";
+                nivelActual === 2
+                    ? "rgba(0,255,136,0.15)"
+                    : "rgba(86,183,255,0.16)";
 
             ctx.fillRect(
                 x - 10,
@@ -2524,9 +2968,8 @@ function dibujarConceptos() {
                 bloque.alto + 20
             );
 
-            // Archivo
             ctx.fillStyle =
-                "#56b7ff";
+                color;
 
             ctx.fillRect(
                 x,
@@ -2535,39 +2978,8 @@ function dibujarConceptos() {
                 bloque.alto
             );
 
-            // Esquina doblada
             ctx.fillStyle =
-                "#9dd9ff";
-
-            ctx.beginPath();
-
-            ctx.moveTo(
-                x +
-                    bloque.ancho -
-                    12,
-                y
-            );
-
-            ctx.lineTo(
-                x +
-                    bloque.ancho,
-                y + 12
-            );
-
-            ctx.lineTo(
-                x +
-                    bloque.ancho -
-                    12,
-                y + 12
-            );
-
-            ctx.closePath();
-
-            ctx.fill();
-
-            // Interior
-            ctx.fillStyle =
-                "#11162a";
+                "#08110c";
 
             ctx.fillRect(
                 x + 5,
@@ -2577,7 +2989,7 @@ function dibujarConceptos() {
             );
 
             ctx.fillStyle =
-                "#56b7ff";
+                color;
 
             ctx.font =
                 "bold 10px Courier New";
@@ -2588,8 +3000,7 @@ function dibujarConceptos() {
             ctx.fillText(
                 "DATA",
                 x +
-                    bloque.ancho /
-                    2,
+                    bloque.ancho / 2,
                 y + 31
             );
 
@@ -2600,7 +3011,7 @@ function dibujarConceptos() {
 }
 
 // ============================================================
-// META — TERMINAL DEL SISTEMA
+// META
 // ============================================================
 
 function dibujarMeta() {
@@ -2612,20 +3023,10 @@ function dibujarMeta() {
     const desbloqueada =
         conceptosRecogidos >= 4;
 
-    // Sombra
     ctx.fillStyle =
-        "rgba(0,0,0,0.35)";
-
-    ctx.fillRect(
-        x - 8,
-        meta.y + 8,
-        meta.ancho + 16,
-        meta.alto
-    );
-
-    // Cuerpo
-    ctx.fillStyle =
-        "#303950";
+        nivelActual === 2
+            ? "#13271b"
+            : "#303950";
 
     ctx.fillRect(
         x,
@@ -2634,7 +3035,6 @@ function dibujarMeta() {
         meta.alto
     );
 
-    // Marco
     ctx.strokeStyle =
         desbloqueada
             ? "#4cff88"
@@ -2649,9 +3049,8 @@ function dibujarMeta() {
         meta.alto
     );
 
-    // Pantalla
     ctx.fillStyle =
-        "#090b16";
+        "#050b08";
 
     ctx.fillRect(
         x + 10,
@@ -2660,7 +3059,6 @@ function dibujarMeta() {
         52
     );
 
-    // Estado
     ctx.fillStyle =
         desbloqueada
             ? "#4cff88"
@@ -2673,7 +3071,6 @@ function dibujarMeta() {
         "center";
 
     ctx.fillText(
-
         desbloqueada
             ? "ACCESS"
             : "LOCKED",
@@ -2688,7 +3085,6 @@ function dibujarMeta() {
         "10px Courier New";
 
     ctx.fillText(
-
         `${conceptosRecogidos}/4 DATA`,
 
         x +
@@ -2699,39 +3095,6 @@ function dibujarMeta() {
 
     ctx.textAlign =
         "left";
-
-    // Luces
-    ctx.fillStyle =
-        desbloqueada
-            ? "#4cff88"
-            : "#ff4057";
-
-    ctx.fillRect(
-        x + 15,
-        meta.y + 82,
-        10,
-        10
-    );
-
-    ctx.fillStyle =
-        "#56b7ff";
-
-    ctx.fillRect(
-        x + 35,
-        meta.y + 82,
-        10,
-        10
-    );
-
-    ctx.fillStyle =
-        "#ffcc44";
-
-    ctx.fillRect(
-        x + 55,
-        meta.y + 82,
-        10,
-        10
-    );
 }
 
 // ============================================================
@@ -2744,7 +3107,6 @@ function dibujarJugador() {
         jugador.x -
         camaraX;
 
-    // Parpadeo mientras es invulnerable.
     if (
         invulnerable &&
         Math.floor(
@@ -2752,13 +3114,11 @@ function dibujarJugador() {
         ) % 2 === 0
     ) {
 
-        ctx.globalAlpha =
-            0.3;
+        ctx.globalAlpha = 0.3;
 
     } else {
 
-        ctx.globalAlpha =
-            1;
+        ctx.globalAlpha = 1;
     }
 
     const caminando =
@@ -2770,14 +3130,11 @@ function dibujarJugador() {
     const paso =
         caminando
             ? Math.sin(
-                frameJuego *
-                0.35
+                frameJuego * 0.35
             ) * 3
             : 0;
 
-    // ========================================================
-    // ANTENA
-    // ========================================================
+    // Antena.
 
     ctx.strokeStyle =
         "#e6e6e6";
@@ -2799,7 +3156,9 @@ function dibujarJugador() {
     ctx.stroke();
 
     ctx.fillStyle =
-        "#4cff88";
+        nivelActual === 2
+            ? "#00ff66"
+            : "#4cff88";
 
     ctx.fillRect(
         x + 16,
@@ -2808,9 +3167,7 @@ function dibujarJugador() {
         6
     );
 
-    // ========================================================
-    // CABEZA
-    // ========================================================
+    // Cabeza.
 
     ctx.fillStyle =
         "#e6e6e6";
@@ -2822,9 +3179,12 @@ function dibujarJugador() {
         24
     );
 
-    // Pantalla
+    // Pantalla.
+
     ctx.fillStyle =
-        "#4cff88";
+        nivelActual === 2
+            ? "#00ff66"
+            : "#4cff88";
 
     ctx.fillRect(
         x + 7,
@@ -2833,16 +3193,12 @@ function dibujarJugador() {
         14
     );
 
-    // ========================================================
-    // OJOS
-    // ========================================================
+    // Ojos.
 
     ctx.fillStyle =
         "#090b16";
 
-    if (
-        jugador.mirando === 1
-    ) {
+    if (jugador.mirando === 1) {
 
         ctx.fillRect(
             x + 15,
@@ -2875,9 +3231,7 @@ function dibujarJugador() {
         );
     }
 
-    // ========================================================
-    // CUELLO
-    // ========================================================
+    // Cuello.
 
     ctx.fillStyle =
         "#9ba5b7";
@@ -2889,9 +3243,7 @@ function dibujarJugador() {
         4
     );
 
-    // ========================================================
-    // CUERPO
-    // ========================================================
+    // Cuerpo.
 
     ctx.fillStyle =
         "#cdd3dd";
@@ -2903,9 +3255,12 @@ function dibujarJugador() {
         14
     );
 
-    // Núcleo
+    // Núcleo.
+
     ctx.fillStyle =
-        "#56b7ff";
+        nivelActual === 2
+            ? "#00ff88"
+            : "#56b7ff";
 
     ctx.fillRect(
         x + 16,
@@ -2914,9 +3269,7 @@ function dibujarJugador() {
         6
     );
 
-    // ========================================================
-    // BRAZOS
-    // ========================================================
+    // Brazos.
 
     ctx.fillStyle =
         "#9ba5b7";
@@ -2932,23 +3285,18 @@ function dibujarJugador() {
         x +
             jugador.ancho -
             7,
-
         jugador.y + 29,
-
         5,
         12
     );
 
-    // ========================================================
-    // PIERNAS
-    // ========================================================
+    // Piernas.
 
     ctx.fillStyle =
         "#e6e6e6";
 
     if (!jugador.enSuelo) {
 
-        // Posición en el aire.
         ctx.fillRect(
             x + 9,
             jugador.y + 41,
@@ -2965,7 +3313,6 @@ function dibujarJugador() {
 
     } else {
 
-        // Animación al caminar.
         ctx.fillRect(
             x + 9,
             jugador.y + 41,
@@ -2985,16 +3332,16 @@ function dibujarJugador() {
 }
 
 // ============================================================
-// DIBUJAR TODO EL NIVEL
+// DIBUJAR TODO
 // ============================================================
 
 function dibujar() {
 
     dibujarFondo();
 
-    dibujarCarteles();
-
     dibujarPlataformas();
+
+    dibujarPlataformasMoviles();
 
     dibujarObstaculos();
 
@@ -3014,7 +3361,7 @@ function dibujar() {
 }
 
 // ============================================================
-// BUCLE PRINCIPAL DEL JUEGO
+// BUCLE PRINCIPAL
 // ============================================================
 
 function gameLoop() {
@@ -3025,10 +3372,12 @@ function gameLoop() {
 
         if (!juegoPausado) {
 
-            // Física
+            // Primero se mueven las plataformas.
+            actualizarPlataformasMoviles();
+
+            // Después se calcula el jugador.
             actualizarJugador();
 
-            // Sistemas
             actualizarInvulnerabilidad();
 
             actualizarEnemigos();
@@ -3037,7 +3386,6 @@ function gameLoop() {
 
             actualizarMensaje();
 
-            // Colisiones
             comprobarObstaculos();
 
             comprobarCheckpoints();
@@ -3048,13 +3396,9 @@ function gameLoop() {
 
             comprobarMeta();
 
-            // Cámara
             actualizarCamara();
         }
 
-        // Incluso si abrimos un modal,
-        // conservamos la última imagen
-        // del escenario.
         dibujar();
     }
 
