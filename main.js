@@ -63,37 +63,37 @@ const conceptos = [
 
     {
         id: 1,
-        nombre: "Concepto 1",
+        nombre: "Tasklist",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 1.",
-        imagen: "",
+            "It's a Windows command that lets you see information about the processes that are currently running. It shows data like the process name, its identifier (PID), memory usage, and other useful details to monitor and manage system applications and processes.",
+        imagen: "img/tasklist.png",
         nivel: 1
     },
 
     {
         id: 2,
-        nombre: "Concepto 2",
+        nombre: "Taskkill",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 1.",
-        imagen: "",
+            "Es un comando de Windows utilizado para finalizar procesos que se encuentran en ejecución. Permite cerrar procesos especificando su nombre o identificador (PID), siendo útil para administrar aplicaciones que no responden o detener procesos innecesarios del sistema.",
+        imagen: "img/taskkill.png",
         nivel: 1
     },
 
     {
         id: 3,
-        nombre: "Concepto 3",
+        nombre: "PowerShell",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 1.",
-        imagen: "",
+            "PowerShell es una herramienta de computadora creada por Microsoft que ayuda a las personas a escribir instrucciones para automatizar tareas repetitivas. Funciona mediante comandos avanzados para controlar y administrar programas o configuraciones del sistema con mayor rapidez.",
+        imagen: "img/powershell.png",
         nivel: 1
     },
 
     {
         id: 4,
-        nombre: "Concepto 4",
+        nombre: "CMD",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 1.",
-        imagen: "",
+            "CMD (Símbolo del sistema): Es el intérprete de comandos de Windows. Ofrece una interfaz basada en texto para interactuar con el sistema operativo, ejecutar scripts, administrar archivos y realizar diagnósticos avanzados.",
+        imagen: "img/cmd.png",
         nivel: 1
     },
 
@@ -104,37 +104,37 @@ const conceptos = [
 
     {
         id: 5,
-        nombre: "Concepto 5",
+        nombre: "Archivo.bat",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 2.",
-        imagen: "",
+            "Un archivo .bat es un archivo de procesamiento por lotes utilizado en Windows que contiene una serie de comandos que se ejecutan automáticamente mediante CMD. Permite automatizar tareas repetitivas, como abrir programas, administrar archivos, ejecutar procesos o realizar configuraciones del sistema.",
+        imagen: "img/bat.png",
         nivel: 2
     },
 
     {
         id: 6,
-        nombre: "Concepto 6",
+        nombre: "Locks",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 2.",
-        imagen: "",
+            "Los bloqueos son medidas de seguridad digitales que evitan que dos programas o usuarios intenten modificar el mismo archivo o base de datos al mismo tiempo. De esta forma, se protegen los datos y se previene que la información sufra errores o alteraciones incorrectas.",
+        imagen: "img/locks.png",
         nivel: 2
     },
 
     {
         id: 7,
-        nombre: "Concepto 7",
+        nombre: "Semáforos",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 2.",
-        imagen: "",
+            "Un semáforo es una variable entera de sincronización utilizada para controlar el acceso concurrente a recursos compartidos por múltiples procesos. Funciona mediante dos operaciones atómicas, comúnmente llamadas wait (esperar) y signal (señalizar), evitando condiciones de carrera al proteger de manera efectiva la sección crítica. ",
+        imagen: "img/semaforo.png",
         nivel: 2
     },
 
     {
         id: 8,
-        nombre: "Concepto 8",
+        nombre: "Monitores",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 2.",
-        imagen: "",
+            "Un monitor es una estructura de sincronización de alto nivel que encapsula variables compartidas y los métodos que operan sobre ellas. Garantiza la exclusión mutua de forma automática, permitiendo que solo un hilo ejecute código internamente a la vez, lo que simplifica enormemente la programación concurrente.",
+        imagen: "img/monitor.png",
         nivel: 2
     },
 
@@ -145,37 +145,37 @@ const conceptos = [
 
     {
         id: 9,
-        nombre: "Concepto 9",
+        nombre: "Condicionales",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 3.",
-        imagen: "",
+            "Las variables condicionales son mecanismos de sincronización que operan conjuntamente con los monitores o mutex. Permiten que los hilos se bloqueen de forma segura esperando que se cumpla una condición lógica específica. Una vez que el estado cambia, otro hilo emite una señal para despertarlo.",
+        imagen: "img/variables.png",
         nivel: 3
     },
 
     {
         id: 10,
-        nombre: "Concepto 10",
+        nombre: "Schedule",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 3.",
-        imagen: "",
+            "A schedule is an organized plan used by computers to decide the order in which different tasks are executed. It manages available resources efficiently so that all computer programs run smoothly, get fair processing time, and finish without unnecessary delays.",
+        imagen: "img/schedule.png",
         nivel: 3
     },
 
     {
         id: 11,
-        nombre: "Concepto 11",
+        nombre: "Sistema E/S",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 3.",
-        imagen: "",
+            "El sistema de entrada/salida se encarga de controlar la e/s de informacion de la computadora y dispositivos lo que les permite comunicarse entre ellos, ej: mouse, teclado, impresora, memorias, discos, etc. \nDefinición elabaorada por Héctor Gael Arias",
+        imagen: "img/es.png",
         nivel: 3
     },
 
     {
         id: 12,
-        nombre: "Concepto 12",
+        nombre: "Concurrencia",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 3.",
-        imagen: "",
+            "Es la capacidad de un sistema operativo para gestionar varios procesos o tareas durante un mismo periodo de tiempo. Permite compartir los recursos del sistema de manera organizada, mejorando el rendimiento y aprovechamiento del procesador.",
+        imagen: "img/concurrencia.png",
         nivel: 3
     },
 
@@ -186,37 +186,37 @@ const conceptos = [
 
     {
         id: 13,
-        nombre: "Concepto 13",
+        nombre: "Inanicion",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 4.",
-        imagen: "",
+            "Es un problema que ocurre cuando un proceso espera durante demasiado tiempo para obtener los recursos que necesita, debido a que otros procesos tienen mayor prioridad o acceden constantemente a dichos recursos",
+        imagen: "img/inanicion.png",
         nivel: 4
     },
 
     {
         id: 14,
-        nombre: "Concepto 14",
+        nombre: "Thread",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 4.",
-        imagen: "",
+            "Es la unidad más pequeña de ejecución dentro de un proceso. Un proceso puede contener varios threads que realizan diferentes tareas de forma concurrente, compartiendo recursos como memoria y archivos para mejorar la eficiencia.",
+        imagen: "img/proceso.png",
         nivel: 4
     },
 
     {
         id: 15,
-        nombre: "Concepto 15",
+        nombre: "Exclusión",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 4.",
-        imagen: "",
+            "Es un mecanismo utilizado en sistemas operativos para evitar que dos o más procesos o hilos accedan simultáneamente a un recurso compartido. Su objetivo es prevenir conflictos, errores o modificaciones incorrectas de los datos.",
+        imagen: "img/exclusion.png",
         nivel: 4
     },
 
     {
         id: 16,
-        nombre: "Concepto 16",
+        nombre: "Bloque de control de procesos (PBC)",
         definicion:
-            "Aquí se colocará la definición definitiva del concepto correspondiente al Nivel 4.",
-        imagen: "",
+            "Es una estructura de datos utilizada por el sistema operativo para almacenar información importante de cada proceso, como su estado, identificador, registros del procesador, prioridad y recursos asignados, permitiendo administrar y controlar su ejecución.",
+        imagen: "img/pcb.png",
         nivel: 4
     }
 ];
