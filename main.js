@@ -165,7 +165,7 @@ const conceptos = [
         id: 11,
         nombre: "Sistema E/S",
         definicion:
-            "El sistema de entrada/salida se encarga de controlar la e/s de informacion de la computadora y dispositivos lo que les permite comunicarse entre ellos, ej: mouse, teclado, impresora, memorias, discos, etc. \nDefinición elabaorada por Héctor Gael Arias",
+            "El sistema de entrada/salida se encarga de controlar la e/s de informacion de la computadora y dispositivos lo que les permite comunicarse entre ellos, ej: mouse, teclado, impresora, memorias, discos, etc. \nDefinición elaborada por Héctor Gael Arias",
         imagen: "img/es.png",
         nivel: 3
     },
