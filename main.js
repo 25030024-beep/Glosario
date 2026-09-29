@@ -186,7 +186,7 @@ const conceptos = [
 
     {
         id: 13,
-        nombre: "Inanicion",
+        nombre: "Inanición",
         definicion:
             "Es un problema que ocurre cuando un proceso espera durante demasiado tiempo para obtener los recursos que necesita, debido a que otros procesos tienen mayor prioridad o acceden constantemente a dichos recursos",
         imagen: "img/inanicion.png",
